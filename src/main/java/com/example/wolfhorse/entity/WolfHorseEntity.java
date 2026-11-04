@@ -94,6 +94,12 @@ public class WolfHorseEntity extends Horse {
         this.targetSelector.addGoal(6, new NearestAttackableTargetGoal<>(this, AbstractSkeleton.class, false));
     }
 
+    /** No random grass grazing: wolves don't forage. */
+    @Override
+    protected boolean canEatGrass() {
+        return false;
+    }
+
     @Override
     public boolean doHurtTarget(Entity target) {
         boolean hit = super.doHurtTarget(target);
