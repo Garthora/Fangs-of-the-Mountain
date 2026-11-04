@@ -96,7 +96,7 @@ public class WolfHorseEntity extends Horse {
 
     /** No random grass grazing: wolves don't forage. */
     @Override
-    protected boolean canEatGrass() {
+    public boolean canEatGrass() {
         return false;
     }
 
