@@ -106,6 +106,12 @@ public class WolfHorseEntity extends Horse {
         this.targetSelector.addGoal(6, new NearestAttackableTargetGoal<>(this, AbstractSkeleton.class, false));
     }
 
+    /** Seat height to match the wolf-shaped back (the wolf model is scaled 1.8x). */
+    @Override
+    public double getPassengersRidingOffset() {
+        return 1.4D;
+    }
+
     /** No random grass grazing: wolves don't forage. */
     @Override
     public boolean canEatGrass() {
