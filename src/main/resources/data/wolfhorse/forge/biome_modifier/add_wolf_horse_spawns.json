@@ -1,0 +1,5 @@
+{
+  "type": "forge:add_spawns",
+  "biomes": ["minecraft:plains", "minecraft:meadow", "minecraft:taiga", "minecraft:forest", "minecraft:snowy_taiga", "minecraft:savanna"],
+  "spawners": { "type": "wolfhorse:wolf_horse", "weight": 3, "minCount": 2, "maxCount": 4 }
+}

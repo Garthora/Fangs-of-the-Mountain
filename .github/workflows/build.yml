@@ -1,0 +1,59 @@
+name: Build
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+
+      - name: Set up Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Set up Gradle (with caching)
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Make gradlew executable
+        run: chmod +x ./gradlew
+
+      - name: Build the mod
+        run: ./gradlew build --no-daemon
+
+      - name: Find the mod jar and version
+        id: info
+        run: |
+          MOD_ID=$(grep '^mod_id=' gradle.properties | cut -d= -f2 | tr -d '[:space:]')
+          VERSION=$(grep '^mod_version=' gradle.properties | cut -d= -f2 | tr -d '[:space:]')
+          JAR="build/libs/${MOD_ID}-${VERSION}.jar"
+          if [ ! -f "$JAR" ]; then
+            echo "Expected jar $JAR not found. Contents of build/libs:"; ls -la build/libs; exit 1
+          fi
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "jar=$JAR" >> "$GITHUB_OUTPUT"
+
+      - name: Upload jar as workflow artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: mod-jar
+          path: ${{ steps.info.outputs.jar }}
+
+      - name: Create or update GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v${{ steps.info.outputs.version }}
+          name: v${{ steps.info.outputs.version }}
+          target_commitish: ${{ github.sha }}
+          make_latest: true
+          files: ${{ steps.info.outputs.jar }}
+          fail_on_unmatched_files: true
