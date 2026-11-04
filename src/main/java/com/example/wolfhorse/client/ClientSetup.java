@@ -13,6 +13,8 @@ public class ClientSetup {
     public static void registerRenderers(EntityRenderersEvent.RegisterRenderers event) {
         // The Wolf Horse is a Horse subclass, so the vanilla horse renderer
         // (coat colours, markings, saddle and armor) works as-is.
-        event.registerEntityRenderer(WolfHorseMod.WOLF_HORSE.get(), HorseRenderer::new);
+        for (var type : WolfHorseMod.allDirewolves()) {
+            event.registerEntityRenderer(type.get(), HorseRenderer::new);
+        }
     }
 }

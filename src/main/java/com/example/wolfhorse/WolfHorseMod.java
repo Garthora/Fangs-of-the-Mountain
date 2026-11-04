@@ -4,7 +4,6 @@ import com.example.wolfhorse.entity.WolfHorseEntity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.entity.SpawnPlacements;
-import net.minecraft.world.entity.animal.Animal;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.levelgen.Heightmap;
@@ -19,6 +18,8 @@ import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
 
+import java.util.List;
+
 @Mod(WolfHorseMod.MODID)
 public class WolfHorseMod {
     public static final String MODID = "wolfhorse";
@@ -28,17 +29,32 @@ public class WolfHorseMod {
     public static final DeferredRegister<Item> ITEMS =
             DeferredRegister.create(ForgeRegistries.ITEMS, MODID);
 
-    public static final RegistryObject<EntityType<WolfHorseEntity>> WOLF_HORSE =
-            ENTITY_TYPES.register("wolf_horse", () -> EntityType.Builder
-                    .of(WolfHorseEntity::new, MobCategory.CREATURE)
-                    .sized(1.3964844F, 1.6F)
-                    .clientTrackingRange(10)
-                    .build("wolf_horse"));
+    // The original id "wolf_horse" is kept for the Plains DireWolf so existing worlds keep theirs.
+    public static final RegistryObject<EntityType<WolfHorseEntity>> PLAINS_DIREWOLF = direwolf("wolf_horse");
+    public static final RegistryObject<EntityType<WolfHorseEntity>> FOREST_DIREWOLF = direwolf("forest_direwolf");
+    public static final RegistryObject<EntityType<WolfHorseEntity>> TUNDRA_DIREWOLF = direwolf("tundra_direwolf");
 
-    // Grey/brown egg, like a wolf's colours
-    public static final RegistryObject<Item> WOLF_HORSE_SPAWN_EGG =
+    public static final RegistryObject<Item> PLAINS_DIREWOLF_SPAWN_EGG =
             ITEMS.register("wolf_horse_spawn_egg",
-                    () -> new ForgeSpawnEggItem(WOLF_HORSE, 0xD7D3D2, 0x7A5A3A, new Item.Properties()));
+                    () -> new ForgeSpawnEggItem(PLAINS_DIREWOLF, 0xD2B48C, 0x4A4A4A, new Item.Properties()));
+    public static final RegistryObject<Item> FOREST_DIREWOLF_SPAWN_EGG =
+            ITEMS.register("forest_direwolf_spawn_egg",
+                    () -> new ForgeSpawnEggItem(FOREST_DIREWOLF, 0x6B4A2F, 0x1A1A1A, new Item.Properties()));
+    public static final RegistryObject<Item> TUNDRA_DIREWOLF_SPAWN_EGG =
+            ITEMS.register("tundra_direwolf_spawn_egg",
+                    () -> new ForgeSpawnEggItem(TUNDRA_DIREWOLF, 0xF2F2F2, 0x8C8C8C, new Item.Properties()));
+
+    private static RegistryObject<EntityType<WolfHorseEntity>> direwolf(String id) {
+        return ENTITY_TYPES.register(id, () -> EntityType.Builder
+                .of(WolfHorseEntity::new, MobCategory.CREATURE)
+                .sized(1.3964844F, 1.6F)
+                .clientTrackingRange(10)
+                .build(id));
+    }
+
+    public static List<RegistryObject<EntityType<WolfHorseEntity>>> allDirewolves() {
+        return List.of(PLAINS_DIREWOLF, FOREST_DIREWOLF, TUNDRA_DIREWOLF);
+    }
 
     public WolfHorseMod() {
         IEventBus modBus = FMLJavaModLoadingContext.get().getModEventBus();
@@ -51,20 +67,26 @@ public class WolfHorseMod {
     }
 
     private void registerAttributes(EntityAttributeCreationEvent event) {
-        event.put(WOLF_HORSE.get(), WolfHorseEntity.createAttributes().build());
+        for (var type : allDirewolves()) {
+            event.put(type.get(), WolfHorseEntity.createAttributes().build());
+        }
     }
 
     private void registerSpawnPlacements(SpawnPlacementRegisterEvent event) {
-        event.register(WOLF_HORSE.get(),
-                SpawnPlacements.Type.ON_GROUND,
-                Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
-                Animal::checkAnimalSpawnRules,
-                SpawnPlacementRegisterEvent.Operation.REPLACE);
+        for (var type : allDirewolves()) {
+            event.register(type.get(),
+                    SpawnPlacements.Type.ON_GROUND,
+                    Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
+                    WolfHorseEntity::checkDirewolfSpawnRules,
+                    SpawnPlacementRegisterEvent.Operation.REPLACE);
+        }
     }
 
     private void addToCreativeTab(BuildCreativeModeTabContentsEvent event) {
         if (event.getTabKey() == CreativeModeTabs.SPAWN_EGGS) {
-            event.accept(WOLF_HORSE_SPAWN_EGG);
+            event.accept(FOREST_DIREWOLF_SPAWN_EGG);
+            event.accept(PLAINS_DIREWOLF_SPAWN_EGG);
+            event.accept(TUNDRA_DIREWOLF_SPAWN_EGG);
         }
     }
 }

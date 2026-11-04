@@ -1,6 +1,10 @@
 {
-  "entity.wolfhorse.wolf_horse": "DireWolf",
-  "item.wolfhorse.wolf_horse_spawn_egg": "DireWolf Spawn Egg",
+  "entity.wolfhorse.wolf_horse": "Plains DireWolf",
+  "entity.wolfhorse.forest_direwolf": "Forest DireWolf",
+  "entity.wolfhorse.tundra_direwolf": "Tundra DireWolf",
+  "item.wolfhorse.wolf_horse_spawn_egg": "Plains DireWolf Spawn Egg",
+  "item.wolfhorse.forest_direwolf_spawn_egg": "Forest DireWolf Spawn Egg",
+  "item.wolfhorse.tundra_direwolf_spawn_egg": "Tundra DireWolf Spawn Egg",
   "message.wolfhorse.sit": "Your DireWolf is sitting",
   "message.wolfhorse.stand": "Your DireWolf is following you"
 }

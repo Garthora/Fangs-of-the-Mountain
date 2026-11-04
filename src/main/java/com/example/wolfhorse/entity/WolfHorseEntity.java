@@ -45,6 +45,18 @@ import net.minecraft.world.level.Level;
 
 import javax.annotation.Nullable;
 import java.util.UUID;
+import net.minecraft.core.BlockPos;
+import net.minecraft.tags.BlockTags;
+import net.minecraft.util.RandomSource;
+import net.minecraft.world.DifficultyInstance;
+import net.minecraft.world.entity.MobSpawnType;
+import net.minecraft.world.entity.SpawnGroupData;
+import net.minecraft.world.entity.animal.horse.Markings;
+import net.minecraft.world.entity.animal.horse.Variant;
+import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.level.ServerLevelAccessor;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.state.BlockState;
 
 /**
  * A rideable horse with a wolf's brain:
@@ -276,17 +288,18 @@ public class WolfHorseEntity extends Horse {
     @Override
     public boolean canMate(Animal other) {
         return other != this && other instanceof WolfHorseEntity mate
+                && mate.getType() == this.getType()   // Forest with Forest, Tundra with Tundra...
                 && this.isTamed() && mate.isTamed()
                 && this.canParent() && mate.canParent();
     }
 
     @Nullable
     @Override
+    @SuppressWarnings("unchecked")
     public AgeableMob getBreedOffspring(ServerLevel level, AgeableMob partner) {
-        WolfHorseEntity baby = WolfHorseMod.WOLF_HORSE.get().create(level);
+        WolfHorseEntity baby = ((EntityType<WolfHorseEntity>) this.getType()).create(level);
         if (baby != null) {
-            baby.setVariant(this.random.nextBoolean() ? this.getVariant()
-                    : ((WolfHorseEntity) partner).getVariant());
+            baby.rollBreedCoat();
             if (this.getOwnerUUID() != null) {
                 baby.setOwnerUUID(this.getOwnerUUID());
                 baby.setTamed(true);
@@ -294,5 +307,47 @@ public class WolfHorseEntity extends Horse {
             this.setOffspringAttributes(partner, baby);
         }
         return baby;
+    }
+
+    // ---------- Breeds (Forest / Plains / Tundra) ----------
+
+    public DireWolfBreed getBreed() {
+        if (this.getType() == WolfHorseMod.FOREST_DIREWOLF.get()) return DireWolfBreed.FOREST;
+        if (this.getType() == WolfHorseMod.TUNDRA_DIREWOLF.get()) return DireWolfBreed.TUNDRA;
+        return DireWolfBreed.PLAINS;
+    }
+
+    @Nullable
+    @Override
+    public SpawnGroupData finalizeSpawn(ServerLevelAccessor level, DifficultyInstance difficulty,
+                                        MobSpawnType reason, @Nullable SpawnGroupData groupData,
+                                        @Nullable CompoundTag tag) {
+        SpawnGroupData data = super.finalizeSpawn(level, difficulty, reason, groupData, tag);
+        this.rollBreedCoat();
+        return data;
+    }
+
+    /** Picks a coat colour and markings from this breed's colour scheme. */
+    public void rollBreedCoat() {
+        DireWolfBreed breed = this.getBreed();
+        this.setCoat(breed.randomCoat(this.random), breed.randomMarkings(this.random));
+    }
+
+    private void setCoat(Variant coat, Markings markings) {
+        // Horse only exposes coat+markings together through its save data, so round-trip it.
+        CompoundTag tag = new CompoundTag();
+        this.addAdditionalSaveData(tag);
+        tag.putInt("Variant", (coat.getId() & 255) | ((markings.getId() & 255) << 8));
+        this.readAdditionalSaveData(tag);
+    }
+
+    /** Like normal animal spawning, but also allows snow, podzol and dirt (for tundra and taiga). */
+    public static boolean checkDirewolfSpawnRules(EntityType<WolfHorseEntity> type, LevelAccessor level,
+                                                  MobSpawnType reason, BlockPos pos, RandomSource random) {
+        BlockState below = level.getBlockState(pos.below());
+        boolean ground = below.is(BlockTags.ANIMALS_SPAWNABLE_ON)
+                || below.is(Blocks.SNOW_BLOCK) || below.is(Blocks.SNOW) || below.is(Blocks.POWDER_SNOW)
+                || below.is(Blocks.PODZOL) || below.is(Blocks.COARSE_DIRT) || below.is(Blocks.DIRT);
+        return ground && Animal.isBrightEnoughToSpawn(level, pos);
     }
 }
