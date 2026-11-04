@@ -1,6 +1,6 @@
-# Wolf Horse
+# Fangs of the Mountains
 
-A Forge 1.20.1 mod that adds a rideable horse with the brain of a wolf.
+A Forge 1.20.1 mod that adds the DireWolf, a rideable mount with the brain of a wolf.
 
 Download the latest jar from the [Releases page](../../releases/latest) and put it in your `.minecraft/mods` folder (needs Forge 1.20.1, 47.x).
 

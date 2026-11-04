@@ -1,6 +1,6 @@
 {
-  "entity.wolfhorse.wolf_horse": "Wolf Horse",
-  "item.wolfhorse.wolf_horse_spawn_egg": "Wolf Horse Spawn Egg",
-  "message.wolfhorse.sit": "Your Wolf Horse is sitting",
-  "message.wolfhorse.stand": "Your Wolf Horse is following you"
+  "entity.wolfhorse.wolf_horse": "DireWolf",
+  "item.wolfhorse.wolf_horse_spawn_egg": "DireWolf Spawn Egg",
+  "message.wolfhorse.sit": "Your DireWolf is sitting",
+  "message.wolfhorse.stand": "Your DireWolf is following you"
 }
