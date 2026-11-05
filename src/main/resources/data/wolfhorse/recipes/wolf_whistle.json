@@ -1,24 +1,14 @@
 {
-  "type": "minecraft:crafting_shapeless",
+  "type": "minecraft:crafting_shaped",
   "category": "equipment",
-  "ingredients": [
-    {
-      "item": "wolfhorse:direwolf_bone"
-    },
-    {
-      "item": "wolfhorse:direwolf_bone"
-    },
-    {
-      "item": "wolfhorse:direwolf_bone"
-    },
-    {
-      "item": "minecraft:gold_nugget"
-    },
-    {
-      "item": "minecraft:gold_nugget"
-    }
+  "pattern": [
+    " GB",
+    "GBG",
+    "BG "
   ],
-  "result": {
-    "item": "wolfhorse:wolf_whistle"
-  }
+  "key": {
+    "B": { "item": "wolfhorse:direwolf_bone" },
+    "G": { "item": "minecraft:gold_nugget" }
+  },
+  "result": { "item": "wolfhorse:wolf_whistle" }
 }
