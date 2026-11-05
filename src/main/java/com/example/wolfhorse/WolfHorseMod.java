@@ -49,6 +49,8 @@ public class WolfHorseMod {
     // Fur and the Fur armor set (iron-level stats)
     public static final RegistryObject<Item> FUR =
             ITEMS.register("fur", () -> new Item(new Item.Properties()));
+    public static final RegistryObject<Item> DIREWOLF_BONE =
+            ITEMS.register("direwolf_bone", () -> new Item(new Item.Properties()));
     public static final RegistryObject<Item> FUR_HELMET = ITEMS.register("fur_helmet",
             () -> new ArmorItem(FurArmorMaterial.INSTANCE, ArmorItem.Type.HELMET, new Item.Properties()));
     public static final RegistryObject<Item> FUR_CHESTPLATE = ITEMS.register("fur_chestplate",
@@ -103,6 +105,7 @@ public class WolfHorseMod {
             event.accept(TUNDRA_DIREWOLF_SPAWN_EGG);
         } else if (event.getTabKey() == CreativeModeTabs.INGREDIENTS) {
             event.accept(FUR);
+            event.accept(DIREWOLF_BONE);
         } else if (event.getTabKey() == CreativeModeTabs.COMBAT) {
             event.accept(FUR_HELMET);
             event.accept(FUR_CHESTPLATE);

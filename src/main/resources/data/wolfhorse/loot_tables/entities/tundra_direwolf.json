@@ -38,7 +38,7 @@
       "entries": [
         {
           "type": "minecraft:item",
-          "name": "minecraft:bone",
+          "name": "wolfhorse:direwolf_bone",
           "functions": [
             {
               "function": "minecraft:set_count",
