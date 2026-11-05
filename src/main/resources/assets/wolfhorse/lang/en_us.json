@@ -14,6 +14,14 @@
   "item.wolfhorse.fur_boots": "Fur Boots",
   "item.wolfhorse.direwolf_bone": "DireWolf Bone",
   "item.wolfhorse.wolf_whistle": "Wolf Whistle",
-  "message.wolfhorse.whistle.called": "%s DireWolves heard your whistle",
-  "message.wolfhorse.whistle.none": "No DireWolves heard your whistle"
+  "message.wolfhorse.whistle.none": "No DireWolves heard your whistle",
+  "item.wolfhorse.wolf_whistle.mode.call": "Come Here",
+  "item.wolfhorse.wolf_whistle.mode.sit": "Sit",
+  "item.wolfhorse.wolf_whistle.mode.follow": "Follow Me",
+  "item.wolfhorse.wolf_whistle.help.tap": "Tap right-click to whistle",
+  "item.wolfhorse.wolf_whistle.help.hold": "Hold right-click to change mode",
+  "message.wolfhorse.whistle.mode": "Whistle mode: %s",
+  "message.wolfhorse.whistle.call": "%s DireWolves are coming to you",
+  "message.wolfhorse.whistle.sit": "%s DireWolves sat down",
+  "message.wolfhorse.whistle.follow": "%s DireWolves are following you"
 }
