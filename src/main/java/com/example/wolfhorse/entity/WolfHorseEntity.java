@@ -45,6 +45,9 @@ import net.minecraft.world.level.Level;
 
 import javax.annotation.Nullable;
 import java.util.UUID;
+import net.minecraft.nbt.NbtUtils;
+import net.minecraft.world.entity.ai.goal.MoveTowardsRestrictionGoal;
+import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.core.BlockPos;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.util.RandomSource;
@@ -68,6 +71,10 @@ import net.minecraft.world.level.block.state.BlockState;
  *  - can still be saddled, armored and ridden like a normal horse
  */
 public class WolfHorseEntity extends Horse {
+    private static final int GUARD_RADIUS = 12;
+    @Nullable
+    private BlockPos guardPos;
+
     private static final EntityDataAccessor<Boolean> DATA_SITTING =
             SynchedEntityData.defineId(WolfHorseEntity.class, EntityDataSerializers.BOOLEAN);
 
@@ -90,6 +97,7 @@ public class WolfHorseEntity extends Horse {
         this.goalSelector.addGoal(2, new WolfHorseSitGoal(this));
         this.goalSelector.addGoal(4, new WolfHorseMeleeAttackGoal(this, 1.4D, true));
         this.goalSelector.addGoal(5, new WolfHorseFollowOwnerGoal(this, 1.2D, 10.0F, 3.0F));
+        this.goalSelector.addGoal(5, new MoveTowardsRestrictionGoal(this, 1.0D)); // back to its guard spot
         this.goalSelector.addGoal(6, new BreedGoal(this, 1.0D, WolfHorseEntity.class));
         this.goalSelector.addGoal(7, new WaterAvoidingRandomStrollGoal(this, 0.8D));
         this.goalSelector.addGoal(8, new LookAtPlayerGoal(this, Player.class, 8.0F));
@@ -99,6 +107,10 @@ public class WolfHorseEntity extends Horse {
         this.targetSelector.addGoal(2, new WolfHorseOwnerHurtTargetGoal(this));
         this.targetSelector.addGoal(3, new HurtByTargetGoal(this).setAlertOthers());
         // Wild ones hunt, like wild wolves
+        // Guarding: attack hostile mobs that come near the guard spot
+        this.targetSelector.addGoal(4, new NearestAttackableTargetGoal<>(this, Monster.class, 5, true, false,
+                e -> this.guardPos != null && !(e instanceof Creeper)
+                        && e.blockPosition().closerThan(this.guardPos, GUARD_RADIUS)));
         this.targetSelector.addGoal(5, new NearestAttackableTargetGoal<>(this, Sheep.class, 10, true, false,
                 e -> !this.isTamed()));
         this.targetSelector.addGoal(5, new NearestAttackableTargetGoal<>(this, Rabbit.class, 10, true, false,
@@ -195,12 +207,20 @@ public class WolfHorseEntity extends Horse {
     public void addAdditionalSaveData(CompoundTag tag) {
         super.addAdditionalSaveData(tag);
         tag.putBoolean("Sitting", this.isOrderedToSit());
+        if (this.guardPos != null) {
+            tag.put("GuardPos", NbtUtils.writeBlockPos(this.guardPos));
+        }
     }
 
     @Override
     public void readAdditionalSaveData(CompoundTag tag) {
         super.readAdditionalSaveData(tag);
         this.setOrderedToSit(tag.getBoolean("Sitting"));
+        if (tag.contains("GuardPos")) {
+            this.setGuarding(NbtUtils.readBlockPos(tag.getCompound("GuardPos")));
+        } else {
+            this.stopGuarding();
+        }
     }
 
     // ---------- Interaction ----------
@@ -261,6 +281,7 @@ public class WolfHorseEntity extends Horse {
         if (stack.is(Items.BONE) && this.isOwner(player) && !player.isSecondaryUseActive()) {
             if (!client) {
                 boolean sit = !this.isOrderedToSit();
+                this.stopGuarding();
                 this.setOrderedToSit(sit);
                 this.navigation.stop();
                 this.setTarget(null);
@@ -279,6 +300,7 @@ public class WolfHorseEntity extends Horse {
     protected void doPlayerRide(Player player) {
         if (this.isOwner(player)) {
             this.setOrderedToSit(false);
+            this.stopGuarding();
             super.doPlayerRide(player);
         }
     }
@@ -313,6 +335,26 @@ public class WolfHorseEntity extends Horse {
             this.setOffspringAttributes(partner, baby);
         }
         return baby;
+    }
+
+    // ---------- Guarding (Wolf Whistle "Stay & Guard") ----------
+
+    public boolean isGuarding() {
+        return this.guardPos != null;
+    }
+
+    /** Stays near this spot and attacks hostile mobs that come close. */
+    public void setGuarding(BlockPos pos) {
+        this.guardPos = pos.immutable();
+        this.restrictTo(this.guardPos, GUARD_RADIUS);
+        this.getNavigation().stop();
+    }
+
+    public void stopGuarding() {
+        if (this.guardPos != null) {
+            this.guardPos = null;
+            this.clearRestriction();
+        }
     }
 
     /** Teleports to a safe spot a few blocks from the target. Used by the Wolf Whistle. */

@@ -30,7 +30,7 @@ public class WolfHorseFollowOwnerGoal extends Goal {
 
     @Override
     public boolean canUse() {
-        if (!this.mob.isTamed() || this.mob.isOrderedToSit() || this.mob.isVehicle() || this.mob.isLeashed()) {
+        if (!this.mob.isTamed() || this.mob.isOrderedToSit() || this.mob.isGuarding() || this.mob.isVehicle() || this.mob.isLeashed()) {
             return false;
         }
         LivingEntity o = this.mob.getOwnerEntity();
@@ -49,6 +49,7 @@ public class WolfHorseFollowOwnerGoal extends Goal {
         return this.owner != null
                 && !this.mob.getNavigation().isDone()
                 && !this.mob.isOrderedToSit()
+                && !this.mob.isGuarding()
                 && !this.mob.isVehicle()
                 && this.mob.distanceToSqr(this.owner) > this.stopDistance * this.stopDistance;
     }

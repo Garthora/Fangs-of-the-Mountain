@@ -2,57 +2,71 @@ package com.example.wolfhorse.item;
 
 import com.example.wolfhorse.entity.WolfHorseEntity;
 import net.minecraft.ChatFormatting;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.projectile.ProjectileUtil;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.UseAnim;
+import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.EntityHitResult;
+import net.minecraft.world.phys.HitResult;
+import net.minecraft.world.phys.Vec3;
 
 import javax.annotation.Nullable;
 import java.util.List;
 
 /**
- * Tap right-click: use the selected command.
- * Hold right-click: cycle through the commands (one step per second), let go to keep it.
+ * Right-click one of your DireWolves with it: tags that DireWolf to this whistle.
+ * Tap right-click: whistle, giving the tagged DireWolf the selected command.
+ * Hold right-click: opens a radial menu (client side) to choose the command.
  */
 public class WolfWhistleItem extends Item {
+    /** Order here is the order around the radial menu, clockwise from the top. Ordinals are saved. */
     public enum Mode {
-        CALL("call"),     // all your loaded DireWolves come to you, far ones teleport
-        SIT("sit"),       // nearby ones sit
-        FOLLOW("follow"); // nearby ones stand up and follow
+        CALL("call"),     // comes to you, teleports if far
+        SIT("sit"),
+        FOLLOW("follow"),
+        GUARD("guard"),   // stays where it is and fights hostile mobs nearby
+        ATTACK("attack"); // attacks the mob you're looking at
 
-        final String key;
+        public final String key;
 
         Mode(String key) {
             this.key = key;
         }
 
-        Component label() {
+        public Component label() {
             return Component.translatable("item.wolfhorse.wolf_whistle.mode." + this.key);
-        }
-
-        Mode next() {
-            return values()[(this.ordinal() + 1) % values().length];
         }
     }
 
-    private static final int TAP_MAX_TICKS = 10;     // shorter than half a second = tap
-    private static final int CYCLE_EVERY_TICKS = 20; // then one mode step per second
+    /** Released before this many ticks = a tap (server side). */
+    public static final int TAP_MAX_TICKS = 6;
+    /** Held this long = open the radial menu (client side). Kept above TAP_MAX_TICKS on purpose. */
+    public static final int RADIAL_OPEN_TICKS = 8;
+
     private static final double WALK_RANGE_SQR = 12.0D * 12.0D;
-    private static final double COMMAND_RANGE_SQR = 32.0D * 32.0D;
+    private static final double ATTACK_LOOK_RANGE = 48.0D;
 
     public WolfWhistleItem(Properties properties) {
         super(properties);
     }
+
+    // ---------- stored data ----------
 
     public static Mode getMode(ItemStack stack) {
         int i = stack.hasTag() ? stack.getTag().getInt("Mode") : 0;
@@ -60,11 +74,43 @@ public class WolfWhistleItem extends Item {
         return all[Math.floorMod(i, all.length)];
     }
 
-    private static void setMode(ItemStack stack, Mode mode) {
-        stack.getOrCreateTag().putInt("Mode", mode.ordinal());
+    /** Called from the radial menu's packet. */
+    public static void selectMode(ItemStack stack, Player player, int index) {
+        Mode[] all = Mode.values();
+        if (index < 0 || index >= all.length) {
+            return;
+        }
+        stack.getOrCreateTag().putInt("Mode", index);
+        player.displayClientMessage(Component.translatable("message.wolfhorse.whistle.mode",
+                all[index].label().copy().withStyle(ChatFormatting.GOLD)), true);
     }
 
-    // ---------- holding vs tapping ----------
+    // ---------- tagging a DireWolf ----------
+
+    @Override
+    public InteractionResult interactLivingEntity(ItemStack stack, Player player, LivingEntity target,
+                                                  InteractionHand hand) {
+        if (!(target instanceof WolfHorseEntity wolf)) {
+            return InteractionResult.PASS;
+        }
+        Level level = player.level();
+        if (!level.isClientSide) {
+            if (wolf.isTamed() && wolf.isOwner(player)) {
+                CompoundTag tag = player.getItemInHand(hand).getOrCreateTag();
+                tag.putUUID("Wolf", wolf.getUUID());
+                tag.putString("WolfName", wolf.getName().getString());
+                level.playSound(null, player.getX(), player.getY(), player.getZ(),
+                        SoundEvents.NOTE_BLOCK_FLUTE.value(), SoundSource.PLAYERS, 0.7F, 1.8F);
+                player.displayClientMessage(Component.translatable("message.wolfhorse.whistle.tagged",
+                        wolf.getName()), true);
+            } else {
+                player.displayClientMessage(Component.translatable("message.wolfhorse.whistle.not_yours"), true);
+            }
+        }
+        return InteractionResult.sidedSuccess(level.isClientSide);
+    }
+
+    // ---------- tap vs hold ----------
 
     @Override
     public int getUseDuration(ItemStack stack) {
@@ -83,22 +129,6 @@ public class WolfWhistleItem extends Item {
     }
 
     @Override
-    public void onUseTick(Level level, LivingEntity user, ItemStack stack, int remaining) {
-        if (level.isClientSide || !(user instanceof Player player)) {
-            return;
-        }
-        int held = this.getUseDuration(stack) - remaining;
-        if (held >= TAP_MAX_TICKS && (held - TAP_MAX_TICKS) % CYCLE_EVERY_TICKS == 0) {
-            Mode mode = getMode(stack).next();
-            setMode(stack, mode);
-            level.playSound(null, player.getX(), player.getY(), player.getZ(),
-                    SoundEvents.NOTE_BLOCK_HAT.value(), SoundSource.PLAYERS, 0.6F, 1.6F);
-            player.displayClientMessage(Component.translatable("message.wolfhorse.whistle.mode",
-                    mode.label().copy().withStyle(ChatFormatting.GOLD)), true);
-        }
-    }
-
-    @Override
     public void releaseUsing(ItemStack stack, Level level, LivingEntity user, int remaining) {
         int held = this.getUseDuration(stack) - remaining;
         if (held < TAP_MAX_TICKS && user instanceof Player player) {
@@ -112,58 +142,110 @@ public class WolfWhistleItem extends Item {
         Mode mode = getMode(stack);
         level.playSound(null, player.getX(), player.getY(), player.getZ(),
                 SoundEvents.NOTE_BLOCK_FLUTE.value(), SoundSource.PLAYERS, 1.0F,
-                mode == Mode.SIT ? 1.4F : 2.0F);
-        player.getCooldowns().addCooldown(this, mode == Mode.CALL ? 60 : 20);
+                mode == Mode.SIT || mode == Mode.GUARD ? 1.4F : 2.0F);
+        player.getCooldowns().addCooldown(this, mode == Mode.CALL ? 40 : 10);
 
         if (!(level instanceof ServerLevel server)) {
             return;
         }
-        int count = 0;
-        for (Entity e : server.getAllEntities()) {
-            if (!(e instanceof WolfHorseEntity wolf) || !wolf.isAlive() || !wolf.isTamed()
-                    || !wolf.isOwner(player) || wolf.isVehicle()) {
-                continue;
-            }
-            double distSqr = wolf.distanceToSqr(player);
-            switch (mode) {
-                case CALL -> {
-                    if (wolf.isLeashed()) {
-                        continue;
-                    }
-                    wolf.setOrderedToSit(false);
-                    wolf.setTarget(null);
-                    if (distSqr <= WALK_RANGE_SQR || !wolf.teleportNear(player)) {
-                        wolf.getNavigation().moveTo(player, 1.4D);
-                    }
-                }
-                case SIT -> {
-                    if (distSqr > COMMAND_RANGE_SQR) {
-                        continue;
-                    }
-                    wolf.setOrderedToSit(true);
-                    wolf.setTarget(null);
-                    wolf.getNavigation().stop();
-                }
-                case FOLLOW -> {
-                    if (distSqr > COMMAND_RANGE_SQR) {
-                        continue;
-                    }
-                    wolf.setOrderedToSit(false);
-                }
-            }
-            count++;
+        CompoundTag tag = stack.getTag();
+        if (tag == null || !tag.hasUUID("Wolf")) {
+            say(player, "no_tag");
+            return;
         }
-        player.displayClientMessage(count == 0
-                ? Component.translatable("message.wolfhorse.whistle.none")
-                : Component.translatable("message.wolfhorse.whistle." + mode.key, count), true);
+        Entity found = server.getEntity(tag.getUUID("Wolf"));
+        if (!(found instanceof WolfHorseEntity wolf) || !wolf.isAlive() || !wolf.isOwner(player)) {
+            String name = tag.getString("WolfName");
+            say(player, "not_found", Component.literal(name.isEmpty() ? "Your DireWolf" : name));
+            return;
+        }
+        Component name = wolf.getName();
+        tag.putString("WolfName", name.getString());
+        if (wolf.isVehicle()) {
+            say(player, "ridden", name);
+            return;
+        }
+
+        switch (mode) {
+            case CALL -> {
+                wolf.setOrderedToSit(false);
+                wolf.stopGuarding();
+                wolf.setTarget(null);
+                if (wolf.isLeashed()
+                        || wolf.distanceToSqr(player) <= WALK_RANGE_SQR
+                        || !wolf.teleportNear(player)) {
+                    wolf.getNavigation().moveTo(player, 1.4D);
+                }
+                say(player, "call", name);
+            }
+            case SIT -> {
+                wolf.stopGuarding();
+                wolf.setOrderedToSit(true);
+                wolf.setTarget(null);
+                wolf.getNavigation().stop();
+                say(player, "sit", name);
+            }
+            case FOLLOW -> {
+                wolf.stopGuarding();
+                wolf.setOrderedToSit(false);
+                say(player, "follow", name);
+            }
+            case GUARD -> {
+                wolf.setOrderedToSit(false);
+                wolf.setTarget(null);
+                wolf.setGuarding(wolf.blockPosition());
+                say(player, "guard", name);
+            }
+            case ATTACK -> {
+                LivingEntity target = findLookTarget(player, wolf);
+                if (target == null || !wolf.canAttack(target) || !wolf.wantsToAttack(target, player)) {
+                    say(player, "attack_none", name);
+                    return;
+                }
+                wolf.setOrderedToSit(false);
+                wolf.stopGuarding();
+                wolf.setTarget(target);
+                say(player, "attack", name, target.getName());
+            }
+        }
+    }
+
+    private static void say(Player player, String key, Object... args) {
+        player.displayClientMessage(Component.translatable("message.wolfhorse.whistle." + key, args), true);
+    }
+
+    /** The living thing the player is looking at, up to 48 blocks away, not through walls. */
+    @Nullable
+    private static LivingEntity findLookTarget(Player player, WolfHorseEntity wolf) {
+        Vec3 eye = player.getEyePosition();
+        Vec3 end = eye.add(player.getViewVector(1.0F).scale(ATTACK_LOOK_RANGE));
+        BlockHitResult block = player.level().clip(
+                new ClipContext(eye, end, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, player));
+        if (block.getType() != HitResult.Type.MISS) {
+            end = block.getLocation();
+        }
+        AABB box = player.getBoundingBox().expandTowards(end.subtract(eye)).inflate(1.0D);
+        EntityHitResult hit = ProjectileUtil.getEntityHitResult(player, eye, end, box,
+                e -> e instanceof LivingEntity && e != wolf && !e.isSpectator() && e.isPickable(),
+                eye.distanceToSqr(end));
+        return hit != null ? (LivingEntity) hit.getEntity() : null;
     }
 
     // ---------- tooltip ----------
 
     @Override
     public void appendHoverText(ItemStack stack, @Nullable Level level, List<Component> tooltip, TooltipFlag flag) {
+        CompoundTag tag = stack.getTag();
+        if (tag != null && tag.hasUUID("Wolf")) {
+            tooltip.add(Component.translatable("item.wolfhorse.wolf_whistle.tagged",
+                    Component.literal(tag.getString("WolfName")).withStyle(ChatFormatting.AQUA))
+                    .withStyle(ChatFormatting.GRAY));
+        } else {
+            tooltip.add(Component.translatable("item.wolfhorse.wolf_whistle.untagged").withStyle(ChatFormatting.GRAY));
+        }
         tooltip.add(Component.translatable("message.wolfhorse.whistle.mode",
                 getMode(stack).label().copy().withStyle(ChatFormatting.GOLD)).withStyle(ChatFormatting.GRAY));
+        tooltip.add(Component.translatable("item.wolfhorse.wolf_whistle.help.tag").withStyle(ChatFormatting.DARK_GRAY));
         tooltip.add(Component.translatable("item.wolfhorse.wolf_whistle.help.tap").withStyle(ChatFormatting.DARK_GRAY));
         tooltip.add(Component.translatable("item.wolfhorse.wolf_whistle.help.hold").withStyle(ChatFormatting.DARK_GRAY));
     }

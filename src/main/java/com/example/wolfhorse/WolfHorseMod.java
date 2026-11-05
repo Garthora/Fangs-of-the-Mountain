@@ -3,6 +3,8 @@ package com.example.wolfhorse;
 import com.example.wolfhorse.entity.WolfHorseEntity;
 import com.example.wolfhorse.item.FurArmorMaterial;
 import com.example.wolfhorse.item.WolfWhistleItem;
+import com.example.wolfhorse.network.ModNetwork;
+import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
@@ -80,9 +82,14 @@ public class WolfHorseMod {
         ENTITY_TYPES.register(modBus);
         ITEMS.register(modBus);
 
+        modBus.addListener(this::commonSetup);
         modBus.addListener(this::registerAttributes);
         modBus.addListener(this::registerSpawnPlacements);
         modBus.addListener(this::addToCreativeTab);
+    }
+
+    private void commonSetup(FMLCommonSetupEvent event) {
+        event.enqueueWork(ModNetwork::register);
     }
 
     private void registerAttributes(EntityAttributeCreationEvent event) {
