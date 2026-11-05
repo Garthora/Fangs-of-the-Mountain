@@ -14,7 +14,6 @@
   "item.wolfhorse.fur_boots": "Fur Boots",
   "item.wolfhorse.direwolf_bone": "DireWolf Bone",
   "item.wolfhorse.wolf_whistle": "Wolf Whistle",
-  "item.wolfhorse.wolf_whistle.mode.call": "Come Here",
   "item.wolfhorse.wolf_whistle.mode.sit": "Sit",
   "item.wolfhorse.wolf_whistle.mode.follow": "Follow Me",
   "item.wolfhorse.wolf_whistle.mode.guard": "Stay & Guard",
@@ -31,10 +30,12 @@
   "message.wolfhorse.whistle.no_tag": "Right-click one of your DireWolves with the whistle to tag it",
   "message.wolfhorse.whistle.not_found": "%s didn't hear your whistle",
   "message.wolfhorse.whistle.ridden": "%s is being ridden",
-  "message.wolfhorse.whistle.call": "%s is coming to you",
   "message.wolfhorse.whistle.sit": "%s sat down",
   "message.wolfhorse.whistle.follow": "%s is following you",
   "message.wolfhorse.whistle.guard": "%s is guarding this spot",
   "message.wolfhorse.whistle.attack": "%s is attacking %s",
-  "message.wolfhorse.whistle.attack_none": "Look at a mob to send %s after it"
+  "message.wolfhorse.whistle.attack_none": "Look at a mob to send %s after it",
+  "item.wolfhorse.wolf_whistle.mode.go": "Go There",
+  "message.wolfhorse.whistle.go": "%s is heading there",
+  "message.wolfhorse.whistle.go_none": "Look at a spot to send %s there"
 }

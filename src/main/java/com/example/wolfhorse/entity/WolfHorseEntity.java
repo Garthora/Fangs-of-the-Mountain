@@ -74,6 +74,8 @@ public class WolfHorseEntity extends Horse {
     private static final int GUARD_RADIUS = 12;
     @Nullable
     private BlockPos guardPos;
+    /** true = Stay & Guard (fights mobs nearby), false = Go There (just waits at the spot). */
+    private boolean guardAttacks = true;
 
     private static final EntityDataAccessor<Boolean> DATA_SITTING =
             SynchedEntityData.defineId(WolfHorseEntity.class, EntityDataSerializers.BOOLEAN);
@@ -109,7 +111,7 @@ public class WolfHorseEntity extends Horse {
         // Wild ones hunt, like wild wolves
         // Guarding: attack hostile mobs that come near the guard spot
         this.targetSelector.addGoal(4, new NearestAttackableTargetGoal<>(this, Monster.class, 5, true, false,
-                e -> this.guardPos != null && !(e instanceof Creeper)
+                e -> this.guardPos != null && this.guardAttacks && !(e instanceof Creeper)
                         && e.blockPosition().closerThan(this.guardPos, GUARD_RADIUS)));
         this.targetSelector.addGoal(5, new NearestAttackableTargetGoal<>(this, Sheep.class, 10, true, false,
                 e -> !this.isTamed()));
@@ -209,6 +211,7 @@ public class WolfHorseEntity extends Horse {
         tag.putBoolean("Sitting", this.isOrderedToSit());
         if (this.guardPos != null) {
             tag.put("GuardPos", NbtUtils.writeBlockPos(this.guardPos));
+            tag.putBoolean("GuardAttacks", this.guardAttacks);
         }
     }
 
@@ -217,7 +220,12 @@ public class WolfHorseEntity extends Horse {
         super.readAdditionalSaveData(tag);
         this.setOrderedToSit(tag.getBoolean("Sitting"));
         if (tag.contains("GuardPos")) {
-            this.setGuarding(NbtUtils.readBlockPos(tag.getCompound("GuardPos")));
+            BlockPos pos = NbtUtils.readBlockPos(tag.getCompound("GuardPos"));
+            if (!tag.contains("GuardAttacks") || tag.getBoolean("GuardAttacks")) {
+                this.setGuarding(pos);
+            } else {
+                this.goTo(pos);
+            }
         } else {
             this.stopGuarding();
         }
@@ -346,8 +354,17 @@ public class WolfHorseEntity extends Horse {
     /** Stays near this spot and attacks hostile mobs that come close. */
     public void setGuarding(BlockPos pos) {
         this.guardPos = pos.immutable();
+        this.guardAttacks = true;
         this.restrictTo(this.guardPos, GUARD_RADIUS);
         this.getNavigation().stop();
+    }
+
+    /** Runs to this spot and waits there (Wolf Whistle "Go There"). */
+    public void goTo(BlockPos pos) {
+        this.guardPos = pos.immutable();
+        this.guardAttacks = false;
+        this.restrictTo(this.guardPos, 2);
+        this.getNavigation().moveTo(pos.getX() + 0.5D, pos.getY(), pos.getZ() + 0.5D, 1.4D);
     }
 
     public void stopGuarding() {

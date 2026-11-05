@@ -2,6 +2,7 @@ package com.example.wolfhorse.item;
 
 import com.example.wolfhorse.entity.WolfHorseEntity;
 import net.minecraft.ChatFormatting;
+import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
@@ -37,7 +38,7 @@ import java.util.List;
 public class WolfWhistleItem extends Item {
     /** Order here is the order around the radial menu, clockwise from the top. Ordinals are saved. */
     public enum Mode {
-        CALL("call"),     // comes to you, teleports if far
+        GO("go"),         // runs to the block you're looking at and waits there
         SIT("sit"),
         FOLLOW("follow"),
         GUARD("guard"),   // stays where it is and fights hostile mobs nearby
@@ -59,7 +60,7 @@ public class WolfWhistleItem extends Item {
     /** Held this long = open the radial menu (client side). Kept above TAP_MAX_TICKS on purpose. */
     public static final int RADIAL_OPEN_TICKS = 8;
 
-    private static final double WALK_RANGE_SQR = 12.0D * 12.0D;
+    private static final double GO_LOOK_RANGE = 64.0D;
     private static final double ATTACK_LOOK_RANGE = 48.0D;
 
     public WolfWhistleItem(Properties properties) {
@@ -143,7 +144,7 @@ public class WolfWhistleItem extends Item {
         level.playSound(null, player.getX(), player.getY(), player.getZ(),
                 SoundEvents.NOTE_BLOCK_FLUTE.value(), SoundSource.PLAYERS, 1.0F,
                 mode == Mode.SIT || mode == Mode.GUARD ? 1.4F : 2.0F);
-        player.getCooldowns().addCooldown(this, mode == Mode.CALL ? 40 : 10);
+        player.getCooldowns().addCooldown(this, 10);
 
         if (!(level instanceof ServerLevel server)) {
             return;
@@ -167,16 +168,16 @@ public class WolfWhistleItem extends Item {
         }
 
         switch (mode) {
-            case CALL -> {
-                wolf.setOrderedToSit(false);
-                wolf.stopGuarding();
-                wolf.setTarget(null);
-                if (wolf.isLeashed()
-                        || wolf.distanceToSqr(player) <= WALK_RANGE_SQR
-                        || !wolf.teleportNear(player)) {
-                    wolf.getNavigation().moveTo(player, 1.4D);
+            case GO -> {
+                BlockPos spot = findLookSpot(player);
+                if (spot == null) {
+                    say(player, "go_none", name);
+                    return;
                 }
-                say(player, "call", name);
+                wolf.setOrderedToSit(false);
+                wolf.setTarget(null);
+                wolf.goTo(spot);
+                say(player, "go", name);
             }
             case SIT -> {
                 wolf.stopGuarding();
@@ -212,6 +213,19 @@ public class WolfWhistleItem extends Item {
 
     private static void say(Player player, String key, Object... args) {
         player.displayClientMessage(Component.translatable("message.wolfhorse.whistle." + key, args), true);
+    }
+
+    /** The open spot next to the block the player is looking at, up to 64 blocks away. */
+    @Nullable
+    private static BlockPos findLookSpot(Player player) {
+        Vec3 eye = player.getEyePosition();
+        Vec3 end = eye.add(player.getViewVector(1.0F).scale(GO_LOOK_RANGE));
+        BlockHitResult hit = player.level().clip(
+                new ClipContext(eye, end, ClipContext.Block.COLLIDER, ClipContext.Fluid.ANY, player));
+        if (hit.getType() == HitResult.Type.MISS) {
+            return null;
+        }
+        return hit.getBlockPos().relative(hit.getDirection());
     }
 
     /** The living thing the player is looking at, up to 48 blocks away, not through walls. */
