@@ -12,5 +12,8 @@
   "item.wolfhorse.fur_chestplate": "Fur Chestplate",
   "item.wolfhorse.fur_leggings": "Fur Leggings",
   "item.wolfhorse.fur_boots": "Fur Boots",
-  "item.wolfhorse.direwolf_bone": "DireWolf Bone"
+  "item.wolfhorse.direwolf_bone": "DireWolf Bone",
+  "item.wolfhorse.wolf_whistle": "Wolf Whistle",
+  "message.wolfhorse.whistle.called": "%s DireWolves heard your whistle",
+  "message.wolfhorse.whistle.none": "No DireWolves heard your whistle"
 }

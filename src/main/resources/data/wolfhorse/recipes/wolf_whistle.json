@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "equipment",
+  "ingredients": [
+    {
+      "item": "wolfhorse:direwolf_bone"
+    },
+    {
+      "item": "wolfhorse:direwolf_bone"
+    },
+    {
+      "item": "wolfhorse:direwolf_bone"
+    },
+    {
+      "item": "minecraft:gold_nugget"
+    },
+    {
+      "item": "minecraft:gold_nugget"
+    }
+  ],
+  "result": {
+    "item": "wolfhorse:wolf_whistle"
+  }
+}

@@ -315,6 +315,33 @@ public class WolfHorseEntity extends Horse {
         return baby;
     }
 
+    /** Teleports to a safe spot a few blocks from the target. Used by the Wolf Whistle. */
+    public boolean teleportNear(Entity target) {
+        BlockPos center = target.blockPosition();
+        for (int i = 0; i < 20; i++) {
+            int dx = this.random.nextIntBetweenInclusive(-4, 4);
+            int dy = this.random.nextIntBetweenInclusive(-1, 1);
+            int dz = this.random.nextIntBetweenInclusive(-4, 4);
+            if (Math.abs(dx) < 2 && Math.abs(dz) < 2) {
+                continue; // don't land on top of the player
+            }
+            BlockPos pos = center.offset(dx, dy, dz);
+            BlockState below = this.level().getBlockState(pos.below());
+            if (below.isAir() || below.getBlock() instanceof net.minecraft.world.level.block.LeavesBlock
+                    || !below.getFluidState().isEmpty()) {
+                continue;
+            }
+            double x = pos.getX() + 0.5D, y = pos.getY(), z = pos.getZ() + 0.5D;
+            if (!this.level().noCollision(this, this.getDimensions(this.getPose()).makeBoundingBox(x, y, z))) {
+                continue;
+            }
+            this.moveTo(x, y, z, this.getYRot(), this.getXRot());
+            this.getNavigation().stop();
+            return true;
+        }
+        return false;
+    }
+
     // ---------- Breeds (Forest / Plains / Tundra) ----------
 
     public DireWolfBreed getBreed() {
