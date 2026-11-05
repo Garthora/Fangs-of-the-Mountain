@@ -1,6 +1,8 @@
 package com.example.wolfhorse;
 
 import com.example.wolfhorse.entity.WolfHorseEntity;
+import com.example.wolfhorse.item.FurArmorMaterial;
+import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.entity.SpawnPlacements;
@@ -43,6 +45,18 @@ public class WolfHorseMod {
     public static final RegistryObject<Item> TUNDRA_DIREWOLF_SPAWN_EGG =
             ITEMS.register("tundra_direwolf_spawn_egg",
                     () -> new ForgeSpawnEggItem(TUNDRA_DIREWOLF, 0xF2F2F2, 0x8C8C8C, new Item.Properties()));
+
+    // Fur and the Fur armor set (iron-level stats)
+    public static final RegistryObject<Item> FUR =
+            ITEMS.register("fur", () -> new Item(new Item.Properties()));
+    public static final RegistryObject<Item> FUR_HELMET = ITEMS.register("fur_helmet",
+            () -> new ArmorItem(FurArmorMaterial.INSTANCE, ArmorItem.Type.HELMET, new Item.Properties()));
+    public static final RegistryObject<Item> FUR_CHESTPLATE = ITEMS.register("fur_chestplate",
+            () -> new ArmorItem(FurArmorMaterial.INSTANCE, ArmorItem.Type.CHESTPLATE, new Item.Properties()));
+    public static final RegistryObject<Item> FUR_LEGGINGS = ITEMS.register("fur_leggings",
+            () -> new ArmorItem(FurArmorMaterial.INSTANCE, ArmorItem.Type.LEGGINGS, new Item.Properties()));
+    public static final RegistryObject<Item> FUR_BOOTS = ITEMS.register("fur_boots",
+            () -> new ArmorItem(FurArmorMaterial.INSTANCE, ArmorItem.Type.BOOTS, new Item.Properties()));
 
     private static RegistryObject<EntityType<WolfHorseEntity>> direwolf(String id) {
         return ENTITY_TYPES.register(id, () -> EntityType.Builder
@@ -87,6 +101,13 @@ public class WolfHorseMod {
             event.accept(FOREST_DIREWOLF_SPAWN_EGG);
             event.accept(PLAINS_DIREWOLF_SPAWN_EGG);
             event.accept(TUNDRA_DIREWOLF_SPAWN_EGG);
+        } else if (event.getTabKey() == CreativeModeTabs.INGREDIENTS) {
+            event.accept(FUR);
+        } else if (event.getTabKey() == CreativeModeTabs.COMBAT) {
+            event.accept(FUR_HELMET);
+            event.accept(FUR_CHESTPLATE);
+            event.accept(FUR_LEGGINGS);
+            event.accept(FUR_BOOTS);
         }
     }
 }

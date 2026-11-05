@@ -6,5 +6,10 @@
   "item.wolfhorse.forest_direwolf_spawn_egg": "Forest DireWolf Spawn Egg",
   "item.wolfhorse.tundra_direwolf_spawn_egg": "Tundra DireWolf Spawn Egg",
   "message.wolfhorse.sit": "Your DireWolf is sitting",
-  "message.wolfhorse.stand": "Your DireWolf is following you"
+  "message.wolfhorse.stand": "Your DireWolf is following you",
+  "item.wolfhorse.fur": "Fur",
+  "item.wolfhorse.fur_helmet": "Fur Helmet",
+  "item.wolfhorse.fur_chestplate": "Fur Chestplate",
+  "item.wolfhorse.fur_leggings": "Fur Leggings",
+  "item.wolfhorse.fur_boots": "Fur Boots"
 }
