@@ -4,14 +4,14 @@
   "pattern": [
     "B",
     "B",
-    "S"
+    "F"
   ],
   "key": {
     "B": {
       "item": "wolfhorse:direwolf_bone"
     },
-    "S": {
-      "item": "minecraft:stick"
+    "F": {
+      "item": "wolfhorse:fang"
     }
   },
   "result": {
