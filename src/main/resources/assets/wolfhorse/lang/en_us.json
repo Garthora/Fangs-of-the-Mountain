@@ -61,5 +61,16 @@
   "trim_pattern.wolfhorse.scarf": "Scarf Armor Trim",
   "entity.wolfhorse.pup": "%s Pup",
   "item.wolfhorse.fang": "Fang",
-  "item.wolfhorse.large_bone_sword": "Large Bone Sword"
+  "item.wolfhorse.large_bone_sword": "Large Bone Sword",
+  "item.wolfhorse.direwolf_backpack": "DireWolf Backpack",
+  "item.wolfhorse.direwolf_backpack.holding": "Holding: %s",
+  "item.wolfhorse.direwolf_backpack.empty": "Empty",
+  "item.wolfhorse.direwolf_backpack.help.store": "Right-click your DireWolf to put it inside",
+  "item.wolfhorse.direwolf_backpack.help.release": "Right-click a block to let it out",
+  "message.wolfhorse.backpack.stored": "%s is in your backpack",
+  "message.wolfhorse.backpack.released": "%s is out of the backpack",
+  "message.wolfhorse.backpack.full": "This backpack already has a DireWolf in it",
+  "message.wolfhorse.backpack.not_yours": "You can only carry your own tamed DireWolf",
+  "message.wolfhorse.backpack.ridden": "%s is being ridden",
+  "message.wolfhorse.backpack.no_room": "There isn't enough room to let your DireWolf out here"
 }

@@ -2,6 +2,7 @@ package com.example.wolfhorse;
 
 import com.example.wolfhorse.entity.WolfHorseEntity;
 import com.example.wolfhorse.item.FurArmorMaterial;
+import com.example.wolfhorse.item.DireWolfBackpackItem;
 import com.example.wolfhorse.item.FurVariant;
 import com.example.wolfhorse.item.LargeBoneTier;
 import net.minecraft.world.item.SwordItem;
@@ -70,6 +71,8 @@ public class WolfHorseMod {
     /** Iron sword stats: 6 damage, 1.6 attack speed, 250 durability. */
     public static final RegistryObject<Item> LARGE_BONE_SWORD = ITEMS.register("large_bone_sword",
             () -> new SwordItem(LargeBoneTier.INSTANCE, 3, -2.4F, new Item.Properties()));
+    public static final RegistryObject<Item> DIREWOLF_BACKPACK = ITEMS.register("direwolf_backpack",
+            () -> new DireWolfBackpackItem(new Item.Properties().stacksTo(1).fireResistant()));
     public static final RegistryObject<Item> WOLF_WHISTLE =
             ITEMS.register("wolf_whistle", () -> new WolfWhistleItem(new Item.Properties().stacksTo(1)));
 
@@ -118,7 +121,7 @@ public class WolfHorseMod {
     /** Everything in the order it appears in the Fangs of the Mountains creative tab. */
     private static List<RegistryObject<Item>> tabItems() {
         return List.of(
-                WOLF_WHISTLE, LARGE_BONE_SWORD, DIREWOLF_BONE, FANG,
+                WOLF_WHISTLE, DIREWOLF_BACKPACK, LARGE_BONE_SWORD, DIREWOLF_BONE, FANG,
                 FOREST_FUR, FUR, TUNDRA_FUR,
                 FOREST_FUR_HELMET, FOREST_FUR_CHESTPLATE, FOREST_FUR_LEGGINGS, FOREST_FUR_BOOTS, FOREST_PELT,
                 FUR_HELMET, FUR_CHESTPLATE, FUR_LEGGINGS, FUR_BOOTS, PELT,
@@ -193,6 +196,7 @@ public class WolfHorseMod {
                     PELT_ARMOR_TRIM_SMITHING_TEMPLATE, SCARF_ARMOR_TRIM_SMITHING_TEMPLATE).forEach(event::accept);
         } else if (tab == CreativeModeTabs.TOOLS_AND_UTILITIES) {
             event.accept(WOLF_WHISTLE);
+            event.accept(DIREWOLF_BACKPACK);
         } else if (tab == CreativeModeTabs.COMBAT) {
             event.accept(LARGE_BONE_SWORD);
             List.of(FOREST_FUR_HELMET, FOREST_FUR_CHESTPLATE, FOREST_FUR_LEGGINGS, FOREST_FUR_BOOTS, FOREST_PELT,

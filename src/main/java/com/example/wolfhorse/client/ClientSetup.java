@@ -1,6 +1,10 @@
 package com.example.wolfhorse.client;
 
 import com.example.wolfhorse.WolfHorseMod;
+import com.example.wolfhorse.item.DireWolfBackpackItem;
+import net.minecraft.client.renderer.item.ItemProperties;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraft.client.renderer.entity.ArmorStandRenderer;
 import net.minecraft.client.renderer.entity.player.PlayerRenderer;
 import net.minecraft.world.entity.EntityType;
@@ -11,6 +15,14 @@ import net.minecraftforge.fml.common.Mod;
 
 @Mod.EventBusSubscriber(modid = WolfHorseMod.MODID, bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
 public class ClientSetup {
+    /** The backpack icon changes when a DireWolf is inside. */
+    @SubscribeEvent
+    public static void clientSetup(FMLClientSetupEvent event) {
+        event.enqueueWork(() -> ItemProperties.register(WolfHorseMod.DIREWOLF_BACKPACK.get(),
+                new ResourceLocation(WolfHorseMod.MODID, "full"),
+                (stack, level, entity, seed) -> DireWolfBackpackItem.hasWolf(stack) ? 1.0F : 0.0F));
+    }
+
     @SubscribeEvent
     public static void registerLayers(EntityRenderersEvent.RegisterLayerDefinitions event) {
         event.registerLayerDefinition(DireWolfSaddleLayer.LAYER, DireWolfSaddleLayer::createLayer);
