@@ -4,6 +4,14 @@
     "wolfhorse:fur_helmet",
     "wolfhorse:fur_chestplate",
     "wolfhorse:fur_leggings",
-    "wolfhorse:fur_boots"
+    "wolfhorse:fur_boots",
+    "wolfhorse:forest_fur_helmet",
+    "wolfhorse:forest_fur_chestplate",
+    "wolfhorse:forest_fur_leggings",
+    "wolfhorse:forest_fur_boots",
+    "wolfhorse:tundra_fur_helmet",
+    "wolfhorse:tundra_fur_chestplate",
+    "wolfhorse:tundra_fur_leggings",
+    "wolfhorse:tundra_fur_boots"
   ]
 }

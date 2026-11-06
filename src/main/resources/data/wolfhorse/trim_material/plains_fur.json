@@ -1,0 +1,9 @@
+{
+  "asset_name": "wolfhorse_plains_fur",
+  "description": {
+    "color": "#C8A878",
+    "translate": "trim_material.wolfhorse.plains_fur"
+  },
+  "ingredient": "wolfhorse:fur",
+  "item_model_index": 0.01
+}

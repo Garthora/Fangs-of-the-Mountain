@@ -14,6 +14,7 @@ public class ClientSetup {
     @SubscribeEvent
     public static void registerLayers(EntityRenderersEvent.RegisterLayerDefinitions event) {
         event.registerLayerDefinition(DireWolfSaddleLayer.LAYER, DireWolfSaddleLayer::createLayer);
+        event.registerLayerDefinition(ScarfLayer.LAYER, ScarfLayer::createLayer);
     }
 
     @SubscribeEvent
@@ -23,18 +24,20 @@ public class ClientSetup {
         }
     }
 
-    /** Show the Pelt on players (both skin types) and armor stands. */
+    /** Show the Pelt and Scarf on players (both skin types) and armor stands. */
     @SubscribeEvent
     public static void addLayers(EntityRenderersEvent.AddLayers event) {
         for (String skin : event.getSkins()) {
             PlayerRenderer renderer = event.getSkin(skin);
             if (renderer != null) {
                 renderer.addLayer(new PeltLayer<>(renderer, event.getEntityModels()));
+                renderer.addLayer(new ScarfLayer<>(renderer, event.getEntityModels()));
             }
         }
         ArmorStandRenderer stand = event.getRenderer(EntityType.ARMOR_STAND);
         if (stand != null) {
             stand.addLayer(new PeltLayer<>(stand, event.getEntityModels()));
+            stand.addLayer(new ScarfLayer<>(stand, event.getEntityModels()));
         }
     }
 }

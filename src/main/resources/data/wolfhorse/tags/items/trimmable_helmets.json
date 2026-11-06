@@ -1,0 +1,14 @@
+{
+  "values": [
+    "minecraft:leather_helmet",
+    "minecraft:chainmail_helmet",
+    "minecraft:iron_helmet",
+    "minecraft:golden_helmet",
+    "minecraft:diamond_helmet",
+    "minecraft:netherite_helmet",
+    "minecraft:turtle_helmet",
+    "wolfhorse:fur_helmet",
+    "wolfhorse:forest_fur_helmet",
+    "wolfhorse:tundra_fur_helmet"
+  ]
+}

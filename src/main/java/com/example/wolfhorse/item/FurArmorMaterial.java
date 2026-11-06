@@ -5,13 +5,27 @@ import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.ArmorMaterial;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.crafting.Ingredient;
 
-/** Fur armor: same numbers as vanilla iron armor, repaired with Fur. */
+import java.util.function.Supplier;
+
+/** Fur armor: same numbers as vanilla iron armor, repaired with its own fur. One per biome variant. */
 public enum FurArmorMaterial implements ArmorMaterial {
-    INSTANCE;
+    // "fur" keeps the original texture/material name so Plains armor in existing worlds is unchanged.
+    PLAINS("fur", () -> WolfHorseMod.FUR.get()),
+    FOREST("forest_fur", () -> WolfHorseMod.FOREST_FUR.get()),
+    TUNDRA("tundra_fur", () -> WolfHorseMod.TUNDRA_FUR.get());
 
     private static final int DURABILITY_MULTIPLIER = 15; // iron
+
+    private final String name;
+    private final Supplier<Item> repairItem;
+
+    FurArmorMaterial(String name, Supplier<Item> repairItem) {
+        this.name = name;
+        this.repairItem = repairItem;
+    }
 
     @Override
     public int getDurabilityForType(ArmorItem.Type type) {
@@ -46,13 +60,13 @@ public enum FurArmorMaterial implements ArmorMaterial {
 
     @Override
     public Ingredient getRepairIngredient() {
-        return Ingredient.of(WolfHorseMod.FUR.get());
+        return Ingredient.of(this.repairItem.get());
     }
 
     @Override
     public String getName() {
-        // textures: assets/wolfhorse/textures/models/armor/fur_layer_1.png and fur_layer_2.png
-        return WolfHorseMod.MODID + ":fur";
+        // textures: assets/wolfhorse/textures/models/armor/<name>_layer_1.png and _layer_2.png
+        return WolfHorseMod.MODID + ":" + this.name;
     }
 
     @Override

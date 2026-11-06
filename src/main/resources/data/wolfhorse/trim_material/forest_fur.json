@@ -1,0 +1,9 @@
+{
+  "asset_name": "wolfhorse_forest_fur",
+  "description": {
+    "color": "#6B4A2F",
+    "translate": "trim_material.wolfhorse.forest_fur"
+  },
+  "ingredient": "wolfhorse:forest_fur",
+  "item_model_index": 0.02
+}

@@ -1,0 +1,9 @@
+{
+  "asset_name": "wolfhorse_tundra_fur",
+  "description": {
+    "color": "#E8EAEE",
+    "translate": "trim_material.wolfhorse.tundra_fur"
+  },
+  "ingredient": "wolfhorse:tundra_fur",
+  "item_model_index": 0.03
+}

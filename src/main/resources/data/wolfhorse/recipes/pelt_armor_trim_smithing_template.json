@@ -11,7 +11,7 @@
       "item": "wolfhorse:direwolf_bone"
     },
     "F": {
-      "item": "wolfhorse:fur"
+      "tag": "wolfhorse:furs"
     },
     "P": {
       "item": "wolfhorse:pelt"

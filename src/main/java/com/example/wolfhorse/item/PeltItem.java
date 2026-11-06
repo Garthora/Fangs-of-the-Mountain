@@ -31,8 +31,15 @@ public class PeltItem extends Item implements Equipable {
             Attributes.ARMOR,
             new AttributeModifier(CHEST_ARMOR_UUID, "Pelt armor", ARMOR, AttributeModifier.Operation.ADDITION));
 
-    public PeltItem(Properties properties) {
+    private final FurVariant variant;
+
+    public PeltItem(Properties properties, FurVariant variant) {
         super(properties);
+        this.variant = variant;
+    }
+
+    public FurVariant getVariant() {
+        return this.variant;
     }
 
     @Override

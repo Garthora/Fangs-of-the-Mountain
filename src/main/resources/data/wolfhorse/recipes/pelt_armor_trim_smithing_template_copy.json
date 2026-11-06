@@ -14,7 +14,7 @@
       "item": "wolfhorse:pelt_armor_trim_smithing_template"
     },
     "F": {
-      "item": "wolfhorse:fur"
+      "tag": "wolfhorse:furs"
     }
   },
   "result": {

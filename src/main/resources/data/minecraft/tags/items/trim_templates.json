@@ -1,6 +1,7 @@
 {
   "replace": false,
   "values": [
-    "wolfhorse:pelt_armor_trim_smithing_template"
+    "wolfhorse:pelt_armor_trim_smithing_template",
+    "wolfhorse:scarf_armor_trim_smithing_template"
   ]
 }

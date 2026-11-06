@@ -2,6 +2,7 @@ package com.example.wolfhorse;
 
 import com.example.wolfhorse.entity.WolfHorseEntity;
 import com.example.wolfhorse.item.FurArmorMaterial;
+import com.example.wolfhorse.item.FurVariant;
 import com.example.wolfhorse.item.PeltItem;
 import com.example.wolfhorse.item.WolfWhistleItem;
 import com.example.wolfhorse.network.ModNetwork;
@@ -60,29 +61,64 @@ public class WolfHorseMod {
             ITEMS.register("tundra_direwolf_spawn_egg",
                     () -> new ForgeSpawnEggItem(TUNDRA_DIREWOLF, 0xF2F2F2, 0x8C8C8C, new Item.Properties()));
 
-    // Fur and the Fur armor set (iron-level stats)
-    public static final RegistryObject<Item> FUR =
-            ITEMS.register("fur", () -> new Item(new Item.Properties()));
     public static final RegistryObject<Item> DIREWOLF_BONE =
             ITEMS.register("direwolf_bone", () -> new Item(new Item.Properties()));
     public static final RegistryObject<Item> WOLF_WHISTLE =
             ITEMS.register("wolf_whistle", () -> new WolfWhistleItem(new Item.Properties().stacksTo(1)));
-    /** The Pelt armor trim pattern (defined in data/wolfhorse/trim_pattern/pelt.json). */
+
+    // ---------- Furs, one per DireWolf type ("fur" is the original id, now Plains Fur) ----------
+    public static final RegistryObject<Item> FUR =
+            ITEMS.register("fur", () -> new Item(new Item.Properties()));
+    public static final RegistryObject<Item> FOREST_FUR =
+            ITEMS.register("forest_fur", () -> new Item(new Item.Properties()));
+    public static final RegistryObject<Item> TUNDRA_FUR =
+            ITEMS.register("tundra_fur", () -> new Item(new Item.Properties()));
+
+    // ---------- Fur armor sets (iron-level stats). Plains keeps the original "fur_*" ids ----------
+    public static final RegistryObject<Item> FUR_HELMET = armor("fur_helmet", FurArmorMaterial.PLAINS, ArmorItem.Type.HELMET);
+    public static final RegistryObject<Item> FUR_CHESTPLATE = armor("fur_chestplate", FurArmorMaterial.PLAINS, ArmorItem.Type.CHESTPLATE);
+    public static final RegistryObject<Item> FUR_LEGGINGS = armor("fur_leggings", FurArmorMaterial.PLAINS, ArmorItem.Type.LEGGINGS);
+    public static final RegistryObject<Item> FUR_BOOTS = armor("fur_boots", FurArmorMaterial.PLAINS, ArmorItem.Type.BOOTS);
+    public static final RegistryObject<Item> FOREST_FUR_HELMET = armor("forest_fur_helmet", FurArmorMaterial.FOREST, ArmorItem.Type.HELMET);
+    public static final RegistryObject<Item> FOREST_FUR_CHESTPLATE = armor("forest_fur_chestplate", FurArmorMaterial.FOREST, ArmorItem.Type.CHESTPLATE);
+    public static final RegistryObject<Item> FOREST_FUR_LEGGINGS = armor("forest_fur_leggings", FurArmorMaterial.FOREST, ArmorItem.Type.LEGGINGS);
+    public static final RegistryObject<Item> FOREST_FUR_BOOTS = armor("forest_fur_boots", FurArmorMaterial.FOREST, ArmorItem.Type.BOOTS);
+    public static final RegistryObject<Item> TUNDRA_FUR_HELMET = armor("tundra_fur_helmet", FurArmorMaterial.TUNDRA, ArmorItem.Type.HELMET);
+    public static final RegistryObject<Item> TUNDRA_FUR_CHESTPLATE = armor("tundra_fur_chestplate", FurArmorMaterial.TUNDRA, ArmorItem.Type.CHESTPLATE);
+    public static final RegistryObject<Item> TUNDRA_FUR_LEGGINGS = armor("tundra_fur_leggings", FurArmorMaterial.TUNDRA, ArmorItem.Type.LEGGINGS);
+    public static final RegistryObject<Item> TUNDRA_FUR_BOOTS = armor("tundra_fur_boots", FurArmorMaterial.TUNDRA, ArmorItem.Type.BOOTS);
+
+    // ---------- Pelts (Plains keeps the original "pelt" id) ----------
+    public static final RegistryObject<Item> PELT =
+            ITEMS.register("pelt", () -> new PeltItem(new Item.Properties().stacksTo(1), FurVariant.PLAINS));
+    public static final RegistryObject<Item> FOREST_PELT =
+            ITEMS.register("forest_pelt", () -> new PeltItem(new Item.Properties().stacksTo(1), FurVariant.FOREST));
+    public static final RegistryObject<Item> TUNDRA_PELT =
+            ITEMS.register("tundra_pelt", () -> new PeltItem(new Item.Properties().stacksTo(1), FurVariant.TUNDRA));
+
+    // ---------- Armor trims (patterns defined in data/wolfhorse/trim_pattern/) ----------
     public static final ResourceKey<TrimPattern> PELT_TRIM =
             ResourceKey.create(Registries.TRIM_PATTERN, new ResourceLocation(MODID, "pelt"));
+    public static final ResourceKey<TrimPattern> SCARF_TRIM =
+            ResourceKey.create(Registries.TRIM_PATTERN, new ResourceLocation(MODID, "scarf"));
     public static final RegistryObject<Item> PELT_ARMOR_TRIM_SMITHING_TEMPLATE =
             ITEMS.register("pelt_armor_trim_smithing_template",
                     () -> SmithingTemplateItem.createArmorTrimTemplate(PELT_TRIM));
-    public static final RegistryObject<Item> PELT =
-            ITEMS.register("pelt", () -> new PeltItem(new Item.Properties().stacksTo(1)));
-    public static final RegistryObject<Item> FUR_HELMET = ITEMS.register("fur_helmet",
-            () -> new ArmorItem(FurArmorMaterial.INSTANCE, ArmorItem.Type.HELMET, new Item.Properties()));
-    public static final RegistryObject<Item> FUR_CHESTPLATE = ITEMS.register("fur_chestplate",
-            () -> new ArmorItem(FurArmorMaterial.INSTANCE, ArmorItem.Type.CHESTPLATE, new Item.Properties()));
-    public static final RegistryObject<Item> FUR_LEGGINGS = ITEMS.register("fur_leggings",
-            () -> new ArmorItem(FurArmorMaterial.INSTANCE, ArmorItem.Type.LEGGINGS, new Item.Properties()));
-    public static final RegistryObject<Item> FUR_BOOTS = ITEMS.register("fur_boots",
-            () -> new ArmorItem(FurArmorMaterial.INSTANCE, ArmorItem.Type.BOOTS, new Item.Properties()));
+    public static final RegistryObject<Item> SCARF_ARMOR_TRIM_SMITHING_TEMPLATE =
+            ITEMS.register("scarf_armor_trim_smithing_template",
+                    () -> SmithingTemplateItem.createArmorTrimTemplate(SCARF_TRIM));
+
+    /** Everything in the order it appears in the Fangs of the Mountains creative tab. */
+    private static List<RegistryObject<Item>> tabItems() {
+        return List.of(
+                WOLF_WHISTLE, DIREWOLF_BONE,
+                FOREST_FUR, FUR, TUNDRA_FUR,
+                FOREST_FUR_HELMET, FOREST_FUR_CHESTPLATE, FOREST_FUR_LEGGINGS, FOREST_FUR_BOOTS, FOREST_PELT,
+                FUR_HELMET, FUR_CHESTPLATE, FUR_LEGGINGS, FUR_BOOTS, PELT,
+                TUNDRA_FUR_HELMET, TUNDRA_FUR_CHESTPLATE, TUNDRA_FUR_LEGGINGS, TUNDRA_FUR_BOOTS, TUNDRA_PELT,
+                PELT_ARMOR_TRIM_SMITHING_TEMPLATE, SCARF_ARMOR_TRIM_SMITHING_TEMPLATE,
+                FOREST_DIREWOLF_SPAWN_EGG, PLAINS_DIREWOLF_SPAWN_EGG, TUNDRA_DIREWOLF_SPAWN_EGG);
+    }
 
     /** Creative tab with everything from Fangs of the Mountains. */
     public static final RegistryObject<CreativeModeTab> TAB = TABS.register("fangs_of_the_mountains",
@@ -90,21 +126,12 @@ public class WolfHorseMod {
                     .title(Component.translatable("itemGroup.wolfhorse"))
                     .icon(() -> new ItemStack(WOLF_WHISTLE.get()))
                     .withTabsBefore(CreativeModeTabs.SPAWN_EGGS)
-                    .displayItems((params, out) -> {
-                        out.accept(FUR.get());
-                        out.accept(DIREWOLF_BONE.get());
-                        out.accept(WOLF_WHISTLE.get());
-                        out.accept(FUR_HELMET.get());
-                        out.accept(FUR_CHESTPLATE.get());
-                        out.accept(FUR_LEGGINGS.get());
-                        out.accept(FUR_BOOTS.get());
-                        out.accept(PELT.get());
-                        out.accept(PELT_ARMOR_TRIM_SMITHING_TEMPLATE.get());
-                        out.accept(FOREST_DIREWOLF_SPAWN_EGG.get());
-                        out.accept(PLAINS_DIREWOLF_SPAWN_EGG.get());
-                        out.accept(TUNDRA_DIREWOLF_SPAWN_EGG.get());
-                    })
+                    .displayItems((params, out) -> tabItems().forEach(item -> out.accept(item.get())))
                     .build());
+
+    private static RegistryObject<Item> armor(String id, FurArmorMaterial material, ArmorItem.Type type) {
+        return ITEMS.register(id, () -> new ArmorItem(material, type, new Item.Properties()));
+    }
 
     private static RegistryObject<EntityType<WolfHorseEntity>> direwolf(String id) {
         return ENTITY_TYPES.register(id, () -> EntityType.Builder
@@ -151,22 +178,19 @@ public class WolfHorseMod {
     }
 
     private void addToCreativeTab(BuildCreativeModeTabContentsEvent event) {
-        if (event.getTabKey() == CreativeModeTabs.SPAWN_EGGS) {
-            event.accept(FOREST_DIREWOLF_SPAWN_EGG);
-            event.accept(PLAINS_DIREWOLF_SPAWN_EGG);
-            event.accept(TUNDRA_DIREWOLF_SPAWN_EGG);
-        } else if (event.getTabKey() == CreativeModeTabs.INGREDIENTS) {
-            event.accept(FUR);
-            event.accept(DIREWOLF_BONE);
-            event.accept(PELT_ARMOR_TRIM_SMITHING_TEMPLATE);
-        } else if (event.getTabKey() == CreativeModeTabs.TOOLS_AND_UTILITIES) {
+        var tab = event.getTabKey();
+        if (tab == CreativeModeTabs.SPAWN_EGGS) {
+            List.of(FOREST_DIREWOLF_SPAWN_EGG, PLAINS_DIREWOLF_SPAWN_EGG, TUNDRA_DIREWOLF_SPAWN_EGG).forEach(event::accept);
+        } else if (tab == CreativeModeTabs.INGREDIENTS) {
+            List.of(FOREST_FUR, FUR, TUNDRA_FUR, DIREWOLF_BONE,
+                    PELT_ARMOR_TRIM_SMITHING_TEMPLATE, SCARF_ARMOR_TRIM_SMITHING_TEMPLATE).forEach(event::accept);
+        } else if (tab == CreativeModeTabs.TOOLS_AND_UTILITIES) {
             event.accept(WOLF_WHISTLE);
-        } else if (event.getTabKey() == CreativeModeTabs.COMBAT) {
-            event.accept(FUR_HELMET);
-            event.accept(FUR_CHESTPLATE);
-            event.accept(FUR_LEGGINGS);
-            event.accept(FUR_BOOTS);
-            event.accept(PELT);
+        } else if (tab == CreativeModeTabs.COMBAT) {
+            List.of(FOREST_FUR_HELMET, FOREST_FUR_CHESTPLATE, FOREST_FUR_LEGGINGS, FOREST_FUR_BOOTS, FOREST_PELT,
+                    FUR_HELMET, FUR_CHESTPLATE, FUR_LEGGINGS, FUR_BOOTS, PELT,
+                    TUNDRA_FUR_HELMET, TUNDRA_FUR_CHESTPLATE, TUNDRA_FUR_LEGGINGS, TUNDRA_FUR_BOOTS, TUNDRA_PELT)
+                    .forEach(event::accept);
         }
     }
 }

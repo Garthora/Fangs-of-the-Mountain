@@ -6,7 +6,7 @@
       "entries": [
         {
           "type": "minecraft:item",
-          "name": "wolfhorse:fur",
+          "name": "wolfhorse:forest_fur",
           "functions": [
             {
               "function": "minecraft:set_count",

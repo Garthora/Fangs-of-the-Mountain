@@ -1,0 +1,7 @@
+{
+  "asset_id": "wolfhorse:scarf",
+  "description": {
+    "translate": "trim_pattern.wolfhorse.scarf"
+  },
+  "template_item": "wolfhorse:scarf_armor_trim_smithing_template"
+}
