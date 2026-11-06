@@ -58,5 +58,6 @@
   "item.wolfhorse.tundra_fur_boots": "Tundra Fur Boots",
   "trim_material.wolfhorse.tundra_fur": "Tundra Fur Material",
   "item.wolfhorse.scarf_armor_trim_smithing_template": "Smithing Template",
-  "trim_pattern.wolfhorse.scarf": "Scarf Armor Trim"
+  "trim_pattern.wolfhorse.scarf": "Scarf Armor Trim",
+  "entity.wolfhorse.pup": "%s Pup"
 }

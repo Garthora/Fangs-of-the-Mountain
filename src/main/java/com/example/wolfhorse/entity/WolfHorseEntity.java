@@ -46,6 +46,8 @@ import net.minecraft.world.level.Level;
 
 import javax.annotation.Nullable;
 import java.util.UUID;
+import net.minecraft.network.chat.Component;
+import net.minecraft.util.Mth;
 import net.minecraft.nbt.NbtUtils;
 import net.minecraft.world.entity.ai.goal.MoveTowardsRestrictionGoal;
 import net.minecraft.world.entity.monster.Monster;
@@ -98,7 +100,8 @@ public class WolfHorseEntity extends Horse {
         // Deliberately not calling super: we replace the horse brain entirely.
         this.goalSelector.addGoal(1, new FloatGoal(this));
         this.goalSelector.addGoal(2, new WolfHorseSitGoal(this));
-        this.goalSelector.addGoal(4, new WolfHorseMeleeAttackGoal(this, 1.4D, true));
+        this.goalSelector.addGoal(4, new WolfHorseMeleeAttackGoal(this, 2.0D, true, true));  // tamed: 2x
+        this.goalSelector.addGoal(4, new WolfHorseMeleeAttackGoal(this, 1.4D, true, false)); // wild
         this.goalSelector.addGoal(5, new WolfHorseFollowOwnerGoal(this, 1.2D, 10.0F, 3.0F));
         this.goalSelector.addGoal(5, new MoveTowardsRestrictionGoal(this, 1.0D)); // back to its guard spot
         this.goalSelector.addGoal(6, new BreedGoal(this, 1.0D, WolfHorseEntity.class));
@@ -269,6 +272,7 @@ public class WolfHorseEntity extends Horse {
     @Override
     public void readAdditionalSaveData(CompoundTag tag) {
         super.readAdditionalSaveData(tag);
+        this.clampStats(); // DireWolves from older versions are brought into the current ranges
         this.setOrderedToSit(tag.getBoolean("Sitting"));
         if (tag.contains("GuardPos")) {
             BlockPos pos = NbtUtils.readBlockPos(tag.getCompound("GuardPos"));
@@ -391,7 +395,7 @@ public class WolfHorseEntity extends Horse {
                 baby.setOwnerUUID(this.getOwnerUUID());
                 baby.setTamed(true);
             }
-            this.setOffspringAttributes(partner, baby);
+            baby.inheritStats(this, (WolfHorseEntity) partner);
         }
         return baby;
     }
@@ -450,6 +454,60 @@ public class WolfHorseEntity extends Horse {
             return true;
         }
         return false;
+    }
+
+    // ---------- Stats (see DireWolfStats for the ranges) ----------
+
+    /** Called by vanilla when a DireWolf spawns (naturally, from an egg or a command). */
+    @Override
+    protected void randomizeAttributes(RandomSource random) {
+        DireWolfBreed breed = this.getBreed();
+        this.setStats(DireWolfStats.rollHealth(random, breed),
+                DireWolfStats.rollSpeedBlocks(random, breed),
+                DireWolfStats.rollJumpBlocks(random, breed));
+        this.setHealth(this.getMaxHealth());
+    }
+
+    /** A pup gets the average of both parents and one fresh roll, like vanilla horses. */
+    void inheritStats(WolfHorseEntity a, WolfHorseEntity b) {
+        DireWolfBreed breed = this.getBreed();
+        double health = (a.baseHealth() + b.baseHealth() + DireWolfStats.rollHealth(this.random, breed)) / 3.0D;
+        double speed = (a.speedBlocks() + b.speedBlocks() + DireWolfStats.rollSpeedBlocks(this.random, breed)) / 3.0D;
+        double jump = (a.jumpBlocks() + b.jumpBlocks() + DireWolfStats.rollJumpBlocks(this.random, breed)) / 3.0D;
+        this.setStats(Math.round(health), speed, jump);
+        this.setHealth(this.getMaxHealth());
+    }
+
+    private void setStats(double health, double speedBlocks, double jumpBlocks) {
+        health = Mth.clamp(health, DireWolfStats.HEALTH_MIN, DireWolfStats.HEALTH_MAX);
+        speedBlocks = Mth.clamp(speedBlocks, DireWolfStats.SPEED_MIN, DireWolfStats.SPEED_MAX);
+        jumpBlocks = Mth.clamp(jumpBlocks, DireWolfStats.JUMP_MIN, DireWolfStats.JUMP_MAX);
+        this.getAttribute(Attributes.MAX_HEALTH).setBaseValue(health);
+        this.getAttribute(Attributes.MOVEMENT_SPEED).setBaseValue(DireWolfStats.speedAttribute(speedBlocks));
+        this.getAttribute(Attributes.JUMP_STRENGTH).setBaseValue(DireWolfStats.jumpStrength(jumpBlocks));
+    }
+
+    private void clampStats() {
+        this.setStats(this.baseHealth(), this.speedBlocks(), this.jumpBlocks());
+    }
+
+    private double baseHealth() {
+        return this.getAttributeBaseValue(Attributes.MAX_HEALTH);
+    }
+
+    private double speedBlocks() {
+        return DireWolfStats.speedBlocks(this.getAttributeBaseValue(Attributes.MOVEMENT_SPEED));
+    }
+
+    private double jumpBlocks() {
+        return DireWolfStats.jumpBlocks(this.getAttributeBaseValue(Attributes.JUMP_STRENGTH));
+    }
+
+    /** Babies are called Pups: "Plains DireWolf Pup". */
+    @Override
+    protected Component getTypeName() {
+        Component name = super.getTypeName();
+        return this.isBaby() ? Component.translatable("entity.wolfhorse.pup", name) : name;
     }
 
     // ---------- Breeds (Forest / Plains / Tundra) ----------
