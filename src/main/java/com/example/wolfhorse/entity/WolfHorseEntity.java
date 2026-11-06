@@ -11,6 +11,7 @@ import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -126,6 +127,56 @@ public class WolfHorseEntity extends Horse {
         return 1.4D;
     }
 
+    // ---------- Sounds: wolf sounds instead of horse sounds ----------
+
+    @Override
+    protected SoundEvent getAmbientSound() {
+        if (this.getTarget() != null) {
+            return SoundEvents.WOLF_GROWL;
+        }
+        if (this.random.nextInt(3) == 0) {
+            return this.isTamed() && this.getHealth() < 10.0F ? SoundEvents.WOLF_WHINE : SoundEvents.WOLF_PANT;
+        }
+        return SoundEvents.WOLF_AMBIENT;
+    }
+
+    @Override
+    protected SoundEvent getHurtSound(DamageSource source) {
+        return SoundEvents.WOLF_HURT;
+    }
+
+    @Override
+    protected SoundEvent getDeathSound() {
+        return SoundEvents.WOLF_DEATH;
+    }
+
+    @Override
+    protected SoundEvent getAngrySound() {
+        return SoundEvents.WOLF_GROWL;
+    }
+
+    @Override
+    protected SoundEvent getEatingSound() {
+        return SoundEvents.GENERIC_EAT;
+    }
+
+    /** Wolf footsteps instead of hooves and gallops. */
+    @Override
+    protected void playStepSound(BlockPos pos, BlockState state) {
+        this.playSound(SoundEvents.WOLF_STEP, 0.3F, 0.9F);
+    }
+
+    /** Horses whinny when they jump; wolves don't. */
+    @Override
+    protected void playJumpSound() {
+    }
+
+    /** A little deeper than a normal wolf, since it's horse-sized. */
+    @Override
+    public float getVoicePitch() {
+        return (this.random.nextFloat() - this.random.nextFloat()) * 0.2F + (this.isBaby() ? 1.3F : 0.8F);
+    }
+
     /** No random grass grazing: wolves don't forage. */
     @Override
     public boolean canEatGrass() {
@@ -136,7 +187,7 @@ public class WolfHorseEntity extends Horse {
     public boolean doHurtTarget(Entity target) {
         boolean hit = super.doHurtTarget(target);
         if (hit) {
-            this.playSound(SoundEvents.HORSE_ANGRY, 1.0F, 1.0F);
+            this.playSound(SoundEvents.WOLF_GROWL, 1.0F, this.getVoicePitch());
         }
         return hit;
     }

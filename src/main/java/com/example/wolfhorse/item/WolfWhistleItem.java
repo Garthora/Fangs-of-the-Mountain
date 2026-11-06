@@ -38,16 +38,19 @@ import java.util.List;
 public class WolfWhistleItem extends Item {
     /** Order here is the order around the radial menu, clockwise from the top. Ordinals are saved. */
     public enum Mode {
-        GO("go"),         // runs to the block you're looking at and waits there
-        SIT("sit"),
-        FOLLOW("follow"),
-        GUARD("guard"),   // stays where it is and fights hostile mobs nearby
-        ATTACK("attack"); // attacks the mob you're looking at
+        // id, whistle pitch (each command sounds different)
+        GO("go", 2.0F),          // highest: runs to the block you're looking at and waits there
+        SIT("sit", 1.0F),        // low
+        FOLLOW("follow", 1.7F),  // high
+        GUARD("guard", 0.75F),   // lowest: stays where it is and fights hostile mobs nearby
+        ATTACK("attack", 1.35F); // middle: attacks the mob you're looking at
 
         public final String key;
+        public final float pitch;
 
-        Mode(String key) {
+        Mode(String key, float pitch) {
             this.key = key;
+            this.pitch = pitch;
         }
 
         public Component label() {
@@ -141,14 +144,12 @@ public class WolfWhistleItem extends Item {
 
     private void blow(ItemStack stack, Level level, Player player) {
         Mode mode = getMode(stack);
-        level.playSound(null, player.getX(), player.getY(), player.getZ(),
-                SoundEvents.NOTE_BLOCK_FLUTE.value(), SoundSource.PLAYERS, 1.0F,
-                mode == Mode.SIT || mode == Mode.GUARD ? 1.4F : 2.0F);
-        player.getCooldowns().addCooldown(this, 10);
+        player.getCooldowns().addCooldown(this, 12);
 
         if (!(level instanceof ServerLevel server)) {
             return;
         }
+        WhistleSounds.play(server, player, mode.pitch);
         CompoundTag tag = stack.getTag();
         if (tag == null || !tag.hasUUID("Wolf")) {
             say(player, "no_tag");
