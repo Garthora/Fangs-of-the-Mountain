@@ -1,6 +1,7 @@
 package com.example.wolfhorse.entity;
 
 import com.example.wolfhorse.WolfHorseMod;
+import com.example.wolfhorse.entity.goal.WolfHorseEatGroundMeatGoal;
 import com.example.wolfhorse.entity.goal.WolfHorseFollowOwnerGoal;
 import com.example.wolfhorse.entity.goal.WolfHorseMeleeAttackGoal;
 import com.example.wolfhorse.entity.goal.WolfHorseOwnerHurtByTargetGoal;
@@ -85,6 +86,13 @@ public class WolfHorseEntity extends Horse {
 
     public WolfHorseEntity(EntityType<? extends Horse> type, Level level) {
         super(type, level);
+        this.setMaxUpStep(1.0F);
+    }
+
+    /** Walks straight up 1-block steps, ridden or not. */
+    @Override
+    public float maxUpStep() {
+        return 1.0F;
     }
 
     public static AttributeSupplier.Builder createAttributes() {
@@ -102,6 +110,7 @@ public class WolfHorseEntity extends Horse {
         this.goalSelector.addGoal(2, new WolfHorseSitGoal(this));
         this.goalSelector.addGoal(4, new WolfHorseMeleeAttackGoal(this, 2.0D, true, true));  // tamed: 2x
         this.goalSelector.addGoal(4, new WolfHorseMeleeAttackGoal(this, 1.4D, true, false)); // wild
+        this.goalSelector.addGoal(4, new WolfHorseEatGroundMeatGoal(this)); // eats meat lying nearby
         this.goalSelector.addGoal(5, new WolfHorseFollowOwnerGoal(this, 1.2D, 10.0F, 3.0F));
         this.goalSelector.addGoal(5, new MoveTowardsRestrictionGoal(this, 1.0D)); // back to its guard spot
         this.goalSelector.addGoal(6, new BreedGoal(this, 1.0D, WolfHorseEntity.class));
@@ -316,19 +325,8 @@ public class WolfHorseEntity extends Horse {
             return InteractionResult.PASS;
         }
 
-        // Tamed: meat heals it, or puts it in love mode for breeding.
+        // Tamed + Large Bone: breeding (love mode).
         if (this.isFood(stack)) {
-            if (this.getHealth() < this.getMaxHealth()) {
-                if (!client) {
-                    FoodProperties food = stack.getFoodProperties(this);
-                    this.heal(food != null ? food.getNutrition() : 2.0F);
-                    if (!player.getAbilities().instabuild) {
-                        stack.shrink(1);
-                    }
-                    this.gameEvent(net.minecraft.world.level.gameevent.GameEvent.EAT, this);
-                }
-                return InteractionResult.sidedSuccess(client);
-            }
             if (!this.isBaby() && this.getAge() == 0 && this.canFallInLove()) {
                 if (!client) {
                     if (!player.getAbilities().instabuild) {
@@ -338,6 +336,21 @@ public class WolfHorseEntity extends Horse {
                 }
                 return InteractionResult.sidedSuccess(client);
             }
+            return InteractionResult.PASS;
+        }
+
+        // Tamed + meat: heals it, and makes a Pup grow up faster.
+        if (isMeat(stack, this)) {
+            if (this.isBaby() || this.getHealth() < this.getMaxHealth()) {
+                if (!client) {
+                    this.eatMeat(stack.copyWithCount(1));
+                    if (!player.getAbilities().instabuild) {
+                        stack.shrink(1);
+                    }
+                }
+                return InteractionResult.sidedSuccess(client);
+            }
+            return InteractionResult.PASS; // full health adult: don't climb on while holding meat
         }
 
         // Tamed + owner + bone: sit / stand toggle.
@@ -371,9 +384,31 @@ public class WolfHorseEntity extends Horse {
     // ---------- Breeding ----------
 
     @Override
+    /** The breeding item: Large Bone. */
     public boolean isFood(ItemStack stack) {
-        FoodProperties food = stack.getFoodProperties(this);
+        return stack.is(WolfHorseMod.DIREWOLF_BONE.get());
+    }
+
+    public static boolean isMeat(ItemStack stack, LivingEntity eater) {
+        FoodProperties food = stack.getFoodProperties(eater);
         return food != null && food.isMeat();
+    }
+
+    /** Eats one piece of meat (from your hand or off the ground): heals, and speeds up a Pup's growth. */
+    public void eatMeat(ItemStack meat) {
+        FoodProperties food = meat.getFoodProperties(this);
+        this.heal(food != null ? Math.max(2, food.getNutrition()) : 2.0F);
+        if (this.isBaby()) {
+            this.ageUp(AgeableMob.getSpeedUpSecondsWhenFeeding(-this.getAge()), true);
+        }
+        this.playSound(SoundEvents.GENERIC_EAT, 1.0F, this.getVoicePitch());
+        this.gameEvent(net.minecraft.world.level.gameevent.GameEvent.EAT, this);
+    }
+
+    /** Can breed whenever it's in love: no full-health requirement. */
+    @Override
+    public boolean canParent() {
+        return !this.isVehicle() && !this.isPassenger() && this.isTamed() && !this.isBaby() && this.isInLove();
     }
 
     @Override
