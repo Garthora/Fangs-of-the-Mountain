@@ -10,7 +10,11 @@ import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.entity.SpawnPlacements;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.CreativeModeTabs;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraftforge.common.ForgeSpawnEggItem;
@@ -34,6 +38,8 @@ public class WolfHorseMod {
             DeferredRegister.create(ForgeRegistries.ENTITY_TYPES, MODID);
     public static final DeferredRegister<Item> ITEMS =
             DeferredRegister.create(ForgeRegistries.ITEMS, MODID);
+    public static final DeferredRegister<CreativeModeTab> TABS =
+            DeferredRegister.create(Registries.CREATIVE_MODE_TAB, MODID);
 
     // The original id "wolf_horse" is kept for the Plains DireWolf so existing worlds keep theirs.
     public static final RegistryObject<EntityType<WolfHorseEntity>> PLAINS_DIREWOLF = direwolf("wolf_horse");
@@ -68,6 +74,27 @@ public class WolfHorseMod {
     public static final RegistryObject<Item> FUR_BOOTS = ITEMS.register("fur_boots",
             () -> new ArmorItem(FurArmorMaterial.INSTANCE, ArmorItem.Type.BOOTS, new Item.Properties()));
 
+    /** Creative tab with everything from Fangs of the Mountains. */
+    public static final RegistryObject<CreativeModeTab> TAB = TABS.register("fangs_of_the_mountains",
+            () -> CreativeModeTab.builder()
+                    .title(Component.translatable("itemGroup.wolfhorse"))
+                    .icon(() -> new ItemStack(WOLF_WHISTLE.get()))
+                    .withTabsBefore(CreativeModeTabs.SPAWN_EGGS)
+                    .displayItems((params, out) -> {
+                        out.accept(FUR.get());
+                        out.accept(DIREWOLF_BONE.get());
+                        out.accept(WOLF_WHISTLE.get());
+                        out.accept(FUR_HELMET.get());
+                        out.accept(FUR_CHESTPLATE.get());
+                        out.accept(FUR_LEGGINGS.get());
+                        out.accept(FUR_BOOTS.get());
+                        out.accept(PELT.get());
+                        out.accept(FOREST_DIREWOLF_SPAWN_EGG.get());
+                        out.accept(PLAINS_DIREWOLF_SPAWN_EGG.get());
+                        out.accept(TUNDRA_DIREWOLF_SPAWN_EGG.get());
+                    })
+                    .build());
+
     private static RegistryObject<EntityType<WolfHorseEntity>> direwolf(String id) {
         return ENTITY_TYPES.register(id, () -> EntityType.Builder
                 .of(WolfHorseEntity::new, MobCategory.CREATURE)
@@ -84,6 +111,7 @@ public class WolfHorseMod {
         IEventBus modBus = FMLJavaModLoadingContext.get().getModEventBus();
         ENTITY_TYPES.register(modBus);
         ITEMS.register(modBus);
+        TABS.register(modBus);
 
         modBus.addListener(this::commonSetup);
         modBus.addListener(this::registerAttributes);

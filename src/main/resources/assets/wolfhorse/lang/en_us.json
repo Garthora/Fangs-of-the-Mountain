@@ -38,5 +38,6 @@
   "item.wolfhorse.wolf_whistle.mode.go": "Go There",
   "message.wolfhorse.whistle.go": "%s is heading there",
   "message.wolfhorse.whistle.go_none": "Look at a spot to send %s there",
-  "item.wolfhorse.pelt": "Pelt"
+  "item.wolfhorse.pelt": "Pelt",
+  "itemGroup.wolfhorse": "Fangs of the Mountains"
 }

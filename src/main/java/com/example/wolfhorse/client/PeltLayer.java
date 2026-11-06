@@ -4,6 +4,7 @@ import com.example.wolfhorse.WolfHorseMod;
 import com.example.wolfhorse.item.PeltItem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
+import com.mojang.math.Axis;
 import net.minecraft.client.model.ElytraModel;
 import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.model.geom.EntityModelSet;
@@ -15,11 +16,17 @@ import net.minecraft.client.renderer.entity.RenderLayerParent;
 import net.minecraft.client.renderer.entity.layers.RenderLayer;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.Mth;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 
-/** Draws the Pelt on the wearer's back using the vanilla elytra shape (always folded). */
+/**
+ * Draws the Pelt on the wearer's back: the folded elytra shape, swinging like a cape
+ * (same motion maths as the vanilla cape: it trails behind when you move, bounces as you
+ * walk and lifts when you fall).
+ */
 public class PeltLayer<T extends LivingEntity, M extends EntityModel<T>> extends RenderLayer<T, M> {
     private static final ResourceLocation TEXTURE =
             new ResourceLocation(WolfHorseMod.MODID, "textures/entity/pelt.png");
@@ -41,11 +48,35 @@ public class PeltLayer<T extends LivingEntity, M extends EntityModel<T>> extends
         }
         pose.pushPose();
         pose.translate(0.0F, 0.0F, 0.125F);
+        if (entity instanceof Player player) {
+            applyCapeSwing(pose, player, partialTick);
+        }
         this.getParentModel().copyPropertiesTo(this.model);
         this.model.setupAnim(entity, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch);
         VertexConsumer vc = ItemRenderer.getArmorFoilBuffer(buffers,
                 RenderType.armorCutoutNoCull(TEXTURE), false, stack.hasFoil());
         this.model.renderToBuffer(pose, vc, light, OverlayTexture.NO_OVERLAY, 1.0F, 1.0F, 1.0F, 1.0F);
         pose.popPose();
+    }
+
+    /** Vanilla cape physics, rotating the whole pelt around the shoulders. */
+    private static void applyCapeSwing(PoseStack pose, Player p, float pt) {
+        double dx = Mth.lerp(pt, p.xCloakO, p.xCloak) - Mth.lerp(pt, p.xo, p.getX());
+        double dy = Mth.lerp(pt, p.yCloakO, p.yCloak) - Mth.lerp(pt, p.yo, p.getY());
+        double dz = Mth.lerp(pt, p.zCloakO, p.zCloak) - Mth.lerp(pt, p.zo, p.getZ());
+        float bodyYaw = Mth.rotLerp(pt, p.yBodyRotO, p.yBodyRot);
+        double sin = Mth.sin(bodyYaw * ((float) Math.PI / 180F));
+        double cos = -Mth.cos(bodyYaw * ((float) Math.PI / 180F));
+
+        float lift = Mth.clamp((float) dy * 10.0F, -6.0F, 32.0F);
+        float back = Mth.clamp((float) (dx * sin + dz * cos) * 100.0F, 0.0F, 150.0F);
+        float side = Mth.clamp((float) (dx * cos - dz * sin) * 100.0F, -20.0F, 20.0F);
+        float bob = Mth.lerp(pt, p.oBob, p.bob);
+        lift += Mth.sin(Mth.lerp(pt, p.walkDistO, p.walkDist) * 6.0F) * 32.0F * bob;
+
+        // The elytra shape already leans out ~15 degrees and handles crouching itself,
+        // so only the movement part of the cape swing is added here.
+        pose.mulPose(Axis.XP.rotationDegrees(back / 2.0F + lift));
+        pose.mulPose(Axis.ZP.rotationDegrees(side / 2.0F));
     }
 }
