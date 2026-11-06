@@ -39,5 +39,7 @@
   "message.wolfhorse.whistle.go": "%s is heading there",
   "message.wolfhorse.whistle.go_none": "Look at a spot to send %s there",
   "item.wolfhorse.pelt": "Pelt",
-  "itemGroup.wolfhorse": "Fangs of the Mountains"
+  "itemGroup.wolfhorse": "Fangs of the Mountains",
+  "item.wolfhorse.pelt_armor_trim_smithing_template": "Smithing Template",
+  "trim_pattern.wolfhorse.pelt": "Pelt Armor Trim"
 }

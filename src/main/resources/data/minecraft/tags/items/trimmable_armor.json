@@ -1,0 +1,9 @@
+{
+  "replace": false,
+  "values": [
+    "wolfhorse:fur_helmet",
+    "wolfhorse:fur_chestplate",
+    "wolfhorse:fur_leggings",
+    "wolfhorse:fur_boots"
+  ]
+}

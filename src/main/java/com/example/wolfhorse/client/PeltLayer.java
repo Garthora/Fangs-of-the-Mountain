@@ -20,7 +20,10 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.armortrim.ArmorTrim;
 
 /**
  * Draws the Pelt on the wearer's back: the folded elytra shape, swinging like a cape
@@ -44,7 +47,9 @@ public class PeltLayer<T extends LivingEntity, M extends EntityModel<T>> extends
                        float netHeadYaw, float headPitch) {
         ItemStack stack = entity.getItemBySlot(EquipmentSlot.CHEST);
         if (!(stack.getItem() instanceof PeltItem)) {
-            return;
+            if (stack.is(Items.ELYTRA) || !wearsPeltTrim(entity)) {
+                return;
+            }
         }
         pose.pushPose();
         pose.translate(0.0F, 0.0F, 0.125F);
@@ -58,6 +63,22 @@ public class PeltLayer<T extends LivingEntity, M extends EntityModel<T>> extends
         this.model.renderToBuffer(pose, vc, light, OverlayTexture.NO_OVERLAY, 1.0F, 1.0F, 1.0F, 1.0F);
         pose.popPose();
     }
+
+    /** True if any worn armor piece has the Pelt armor trim. */
+    private static boolean wearsPeltTrim(LivingEntity entity) {
+        RegistryAccess access = entity.level().registryAccess();
+        for (EquipmentSlot slot : ARMOR_SLOTS) {
+            ItemStack piece = entity.getItemBySlot(slot);
+            if (!piece.isEmpty() && ArmorTrim.getTrim(access, piece)
+                    .map(trim -> trim.pattern().is(WolfHorseMod.PELT_TRIM)).orElse(false)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private static final EquipmentSlot[] ARMOR_SLOTS = {
+            EquipmentSlot.HEAD, EquipmentSlot.CHEST, EquipmentSlot.LEGS, EquipmentSlot.FEET};
 
     /** Vanilla cape physics, rotating the whole pelt around the shoulders. */
     private static void applyCapeSwing(PoseStack pose, Player p, float pt) {

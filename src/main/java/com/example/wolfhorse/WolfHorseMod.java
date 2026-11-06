@@ -11,6 +11,10 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.entity.SpawnPlacements;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.SmithingTemplateItem;
+import net.minecraft.world.item.armortrim.TrimPattern;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.CreativeModeTabs;
@@ -63,6 +67,12 @@ public class WolfHorseMod {
             ITEMS.register("direwolf_bone", () -> new Item(new Item.Properties()));
     public static final RegistryObject<Item> WOLF_WHISTLE =
             ITEMS.register("wolf_whistle", () -> new WolfWhistleItem(new Item.Properties().stacksTo(1)));
+    /** The Pelt armor trim pattern (defined in data/wolfhorse/trim_pattern/pelt.json). */
+    public static final ResourceKey<TrimPattern> PELT_TRIM =
+            ResourceKey.create(Registries.TRIM_PATTERN, new ResourceLocation(MODID, "pelt"));
+    public static final RegistryObject<Item> PELT_ARMOR_TRIM_SMITHING_TEMPLATE =
+            ITEMS.register("pelt_armor_trim_smithing_template",
+                    () -> SmithingTemplateItem.createArmorTrimTemplate(PELT_TRIM));
     public static final RegistryObject<Item> PELT =
             ITEMS.register("pelt", () -> new PeltItem(new Item.Properties().stacksTo(1)));
     public static final RegistryObject<Item> FUR_HELMET = ITEMS.register("fur_helmet",
@@ -89,6 +99,7 @@ public class WolfHorseMod {
                         out.accept(FUR_LEGGINGS.get());
                         out.accept(FUR_BOOTS.get());
                         out.accept(PELT.get());
+                        out.accept(PELT_ARMOR_TRIM_SMITHING_TEMPLATE.get());
                         out.accept(FOREST_DIREWOLF_SPAWN_EGG.get());
                         out.accept(PLAINS_DIREWOLF_SPAWN_EGG.get());
                         out.accept(TUNDRA_DIREWOLF_SPAWN_EGG.get());
@@ -147,6 +158,7 @@ public class WolfHorseMod {
         } else if (event.getTabKey() == CreativeModeTabs.INGREDIENTS) {
             event.accept(FUR);
             event.accept(DIREWOLF_BONE);
+            event.accept(PELT_ARMOR_TRIM_SMITHING_TEMPLATE);
         } else if (event.getTabKey() == CreativeModeTabs.TOOLS_AND_UTILITIES) {
             event.accept(WOLF_WHISTLE);
         } else if (event.getTabKey() == CreativeModeTabs.COMBAT) {

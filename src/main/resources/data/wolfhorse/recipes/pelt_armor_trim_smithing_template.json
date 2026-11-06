@@ -1,0 +1,23 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "LFL",
+    "FPF",
+    "LFL"
+  ],
+  "key": {
+    "L": {
+      "item": "wolfhorse:direwolf_bone"
+    },
+    "F": {
+      "item": "wolfhorse:fur"
+    },
+    "P": {
+      "item": "wolfhorse:pelt"
+    }
+  },
+  "result": {
+    "item": "wolfhorse:pelt_armor_trim_smithing_template"
+  }
+}
