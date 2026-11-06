@@ -2,6 +2,7 @@ package com.example.wolfhorse;
 
 import com.example.wolfhorse.entity.WolfHorseEntity;
 import com.example.wolfhorse.item.FurArmorMaterial;
+import com.example.wolfhorse.item.PeltItem;
 import com.example.wolfhorse.item.WolfWhistleItem;
 import com.example.wolfhorse.network.ModNetwork;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
@@ -56,6 +57,8 @@ public class WolfHorseMod {
             ITEMS.register("direwolf_bone", () -> new Item(new Item.Properties()));
     public static final RegistryObject<Item> WOLF_WHISTLE =
             ITEMS.register("wolf_whistle", () -> new WolfWhistleItem(new Item.Properties().stacksTo(1)));
+    public static final RegistryObject<Item> PELT =
+            ITEMS.register("pelt", () -> new PeltItem(new Item.Properties().stacksTo(1)));
     public static final RegistryObject<Item> FUR_HELMET = ITEMS.register("fur_helmet",
             () -> new ArmorItem(FurArmorMaterial.INSTANCE, ArmorItem.Type.HELMET, new Item.Properties()));
     public static final RegistryObject<Item> FUR_CHESTPLATE = ITEMS.register("fur_chestplate",
@@ -123,6 +126,7 @@ public class WolfHorseMod {
             event.accept(FUR_CHESTPLATE);
             event.accept(FUR_LEGGINGS);
             event.accept(FUR_BOOTS);
+            event.accept(PELT);
         }
     }
 }
