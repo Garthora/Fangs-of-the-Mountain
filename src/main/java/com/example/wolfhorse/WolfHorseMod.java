@@ -3,6 +3,8 @@ package com.example.wolfhorse;
 import com.example.wolfhorse.entity.WolfHorseEntity;
 import com.example.wolfhorse.item.FurArmorMaterial;
 import com.example.wolfhorse.item.FurVariant;
+import com.example.wolfhorse.item.LargeBoneTier;
+import net.minecraft.world.item.SwordItem;
 import com.example.wolfhorse.item.PeltItem;
 import com.example.wolfhorse.item.WolfWhistleItem;
 import com.example.wolfhorse.network.ModNetwork;
@@ -63,6 +65,11 @@ public class WolfHorseMod {
 
     public static final RegistryObject<Item> DIREWOLF_BONE =
             ITEMS.register("direwolf_bone", () -> new Item(new Item.Properties()));
+    public static final RegistryObject<Item> FANG =
+            ITEMS.register("fang", () -> new Item(new Item.Properties()));
+    /** Iron sword stats: 6 damage, 1.6 attack speed, 250 durability. */
+    public static final RegistryObject<Item> LARGE_BONE_SWORD = ITEMS.register("large_bone_sword",
+            () -> new SwordItem(LargeBoneTier.INSTANCE, 3, -2.4F, new Item.Properties()));
     public static final RegistryObject<Item> WOLF_WHISTLE =
             ITEMS.register("wolf_whistle", () -> new WolfWhistleItem(new Item.Properties().stacksTo(1)));
 
@@ -111,7 +118,7 @@ public class WolfHorseMod {
     /** Everything in the order it appears in the Fangs of the Mountains creative tab. */
     private static List<RegistryObject<Item>> tabItems() {
         return List.of(
-                WOLF_WHISTLE, DIREWOLF_BONE,
+                WOLF_WHISTLE, LARGE_BONE_SWORD, DIREWOLF_BONE, FANG,
                 FOREST_FUR, FUR, TUNDRA_FUR,
                 FOREST_FUR_HELMET, FOREST_FUR_CHESTPLATE, FOREST_FUR_LEGGINGS, FOREST_FUR_BOOTS, FOREST_PELT,
                 FUR_HELMET, FUR_CHESTPLATE, FUR_LEGGINGS, FUR_BOOTS, PELT,
@@ -182,11 +189,12 @@ public class WolfHorseMod {
         if (tab == CreativeModeTabs.SPAWN_EGGS) {
             List.of(FOREST_DIREWOLF_SPAWN_EGG, PLAINS_DIREWOLF_SPAWN_EGG, TUNDRA_DIREWOLF_SPAWN_EGG).forEach(event::accept);
         } else if (tab == CreativeModeTabs.INGREDIENTS) {
-            List.of(FOREST_FUR, FUR, TUNDRA_FUR, DIREWOLF_BONE,
+            List.of(FOREST_FUR, FUR, TUNDRA_FUR, DIREWOLF_BONE, FANG,
                     PELT_ARMOR_TRIM_SMITHING_TEMPLATE, SCARF_ARMOR_TRIM_SMITHING_TEMPLATE).forEach(event::accept);
         } else if (tab == CreativeModeTabs.TOOLS_AND_UTILITIES) {
             event.accept(WOLF_WHISTLE);
         } else if (tab == CreativeModeTabs.COMBAT) {
+            event.accept(LARGE_BONE_SWORD);
             List.of(FOREST_FUR_HELMET, FOREST_FUR_CHESTPLATE, FOREST_FUR_LEGGINGS, FOREST_FUR_BOOTS, FOREST_PELT,
                     FUR_HELMET, FUR_CHESTPLATE, FUR_LEGGINGS, FUR_BOOTS, PELT,
                     TUNDRA_FUR_HELMET, TUNDRA_FUR_CHESTPLATE, TUNDRA_FUR_LEGGINGS, TUNDRA_FUR_BOOTS, TUNDRA_PELT)

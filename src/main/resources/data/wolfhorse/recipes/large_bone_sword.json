@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "pattern": [
+    "B",
+    "B",
+    "S"
+  ],
+  "key": {
+    "B": {
+      "item": "wolfhorse:direwolf_bone"
+    },
+    "S": {
+      "item": "minecraft:stick"
+    }
+  },
+  "result": {
+    "item": "wolfhorse:large_bone_sword"
+  }
+}

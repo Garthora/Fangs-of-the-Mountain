@@ -59,6 +59,22 @@
           ]
         }
       ]
+    },
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "wolfhorse:fang"
+        }
+      ],
+      "conditions": [
+        {
+          "condition": "minecraft:random_chance_with_looting",
+          "chance": 0.35,
+          "looting_multiplier": 0.1
+        }
+      ]
     }
   ]
 }
