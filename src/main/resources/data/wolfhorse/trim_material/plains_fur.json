@@ -1,9 +1,9 @@
 {
-  "asset_name": "wolfhorse_plains_fur",
+  "asset_name": "fotm_plains_fur",
   "description": {
     "color": "#C8A878",
-    "translate": "trim_material.wolfhorse.plains_fur"
+    "translate": "trim_material.fotm.plains_fur"
   },
-  "ingredient": "wolfhorse:fur",
+  "ingredient": "minecraft:barrier",
   "item_model_index": 0.01
 }

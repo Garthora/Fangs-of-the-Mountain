@@ -365,7 +365,7 @@ public class WolfHorseEntity extends Horse {
                 this.navigation.stop();
                 this.setTarget(null);
                 player.displayClientMessage(net.minecraft.network.chat.Component.translatable(
-                        sit ? "message.wolfhorse.sit" : "message.wolfhorse.stand"), true);
+                        sit ? "message.fotm.sit" : "message.fotm.stand"), true);
             }
             return InteractionResult.sidedSuccess(client);
         }
@@ -556,7 +556,7 @@ public class WolfHorseEntity extends Horse {
     @Override
     protected Component getTypeName() {
         Component name = super.getTypeName();
-        return this.isBaby() ? Component.translatable("entity.wolfhorse.pup", name) : name;
+        return this.isBaby() ? Component.translatable("entity.fotm.pup", name) : name;
     }
 
     // ---------- Breeds (Forest / Plains / Tundra) ----------

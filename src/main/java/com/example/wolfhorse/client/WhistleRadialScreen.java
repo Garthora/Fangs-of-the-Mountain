@@ -38,7 +38,7 @@ public class WhistleRadialScreen extends Screen {
     private int hovered = -1;
 
     public WhistleRadialScreen(InteractionHand hand, ItemStack whistle) {
-        super(Component.translatable("item.wolfhorse.wolf_whistle"));
+        super(Component.translatable("item.fotm.wolf_whistle"));
         this.hand = hand;
         this.whistle = whistle;
         this.current = WolfWhistleItem.getMode(whistle).ordinal();
@@ -158,7 +158,7 @@ public class WhistleRadialScreen extends Screen {
 
         // --- centre: the whistle, and a hint underneath the ring ---
         g.renderItem(this.whistle, (int) cx - 8, (int) cy - 8);
-        g.drawCenteredString(this.font, Component.translatable("item.wolfhorse.wolf_whistle.radial_hint"),
+        g.drawCenteredString(this.font, Component.translatable("item.fotm.wolf_whistle.radial_hint"),
                 (int) cx, (int) (cy + OUTER + 8), 0xFFAAAAAA);
     }
 }

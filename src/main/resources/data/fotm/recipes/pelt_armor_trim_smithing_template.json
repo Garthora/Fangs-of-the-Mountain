@@ -1,0 +1,23 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "LFL",
+    "FPF",
+    "LFL"
+  ],
+  "key": {
+    "L": {
+      "item": "fotm:direwolf_bone"
+    },
+    "F": {
+      "tag": "fotm:furs"
+    },
+    "P": {
+      "item": "fotm:pelt"
+    }
+  },
+  "result": {
+    "item": "fotm:pelt_armor_trim_smithing_template"
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "conditions": [
+    {
+      "type": "fotm:fur_armor",
+      "allows": "sets"
+    }
+  ],
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "pattern": [
+    "F F",
+    "FFF",
+    "FFF"
+  ],
+  "key": {
+    "F": {
+      "item": "fotm:fur"
+    }
+  },
+  "result": {
+    "item": "fotm:fur_chestplate"
+  }
+}

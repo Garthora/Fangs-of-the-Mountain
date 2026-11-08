@@ -1,0 +1,29 @@
+{
+  "conditions": [
+    {
+      "type": "fotm:fur_armor",
+      "allows": "trim"
+    }
+  ],
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "FSF",
+    "FLF",
+    "FSF"
+  ],
+  "key": {
+    "F": {
+      "tag": "fotm:furs"
+    },
+    "S": {
+      "item": "minecraft:string"
+    },
+    "L": {
+      "item": "fotm:direwolf_bone"
+    }
+  },
+  "result": {
+    "item": "fotm:fur_wraps_armor_trim_smithing_template"
+  }
+}

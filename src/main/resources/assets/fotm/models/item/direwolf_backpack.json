@@ -1,0 +1,14 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "fotm:item/direwolf_backpack"
+  },
+  "overrides": [
+    {
+      "predicate": {
+        "fotm:full": 1
+      },
+      "model": "fotm:item/direwolf_backpack_full"
+    }
+  ]
+}

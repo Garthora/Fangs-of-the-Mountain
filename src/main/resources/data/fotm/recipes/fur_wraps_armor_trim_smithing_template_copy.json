@@ -1,0 +1,30 @@
+{
+  "conditions": [
+    {
+      "type": "fotm:fur_armor",
+      "allows": "trim"
+    }
+  ],
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "DTD",
+    "DFD",
+    "DDD"
+  ],
+  "key": {
+    "D": {
+      "item": "minecraft:diamond"
+    },
+    "T": {
+      "item": "fotm:fur_wraps_armor_trim_smithing_template"
+    },
+    "F": {
+      "tag": "fotm:furs"
+    }
+  },
+  "result": {
+    "item": "fotm:fur_wraps_armor_trim_smithing_template",
+    "count": 2
+  }
+}

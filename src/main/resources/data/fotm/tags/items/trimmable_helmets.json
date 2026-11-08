@@ -1,0 +1,18 @@
+{
+  "values": [
+    "minecraft:leather_helmet",
+    "minecraft:chainmail_helmet",
+    "minecraft:iron_helmet",
+    "minecraft:golden_helmet",
+    "minecraft:diamond_helmet",
+    "minecraft:netherite_helmet",
+    "minecraft:turtle_helmet",
+    "fotm:fur_helmet",
+    "fotm:forest_fur_helmet",
+    "fotm:tundra_fur_helmet",
+    {
+      "id": "#forge:armors/helmets",
+      "required": false
+    }
+  ]
+}

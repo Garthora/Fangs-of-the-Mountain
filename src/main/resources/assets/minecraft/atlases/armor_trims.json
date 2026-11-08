@@ -3,14 +3,14 @@
     {
       "type": "paletted_permutations",
       "textures": [
-        "wolfhorse:trims/models/armor/pelt",
-        "wolfhorse:trims/models/armor/pelt_leggings",
-        "wolfhorse:trims/models/armor/scarf",
-        "wolfhorse:trims/models/armor/scarf_leggings",
-        "wolfhorse:trims/models/armor/fur",
-        "wolfhorse:trims/models/armor/fur_leggings",
-        "wolfhorse:trims/models/armor/fur_wraps",
-        "wolfhorse:trims/models/armor/fur_wraps_leggings"
+        "fotm:trims/models/armor/pelt",
+        "fotm:trims/models/armor/pelt_leggings",
+        "fotm:trims/models/armor/scarf",
+        "fotm:trims/models/armor/scarf_leggings",
+        "fotm:trims/models/armor/fur",
+        "fotm:trims/models/armor/fur_leggings",
+        "fotm:trims/models/armor/fur_wraps",
+        "fotm:trims/models/armor/fur_wraps_leggings"
       ],
       "palette_key": "trims/color_palettes/trim_palette",
       "permutations": {
@@ -65,20 +65,20 @@
         "minecraft:trims/models/armor/wayfinder_leggings",
         "minecraft:trims/models/armor/wild",
         "minecraft:trims/models/armor/wild_leggings",
-        "wolfhorse:trims/models/armor/pelt",
-        "wolfhorse:trims/models/armor/pelt_leggings",
-        "wolfhorse:trims/models/armor/scarf",
-        "wolfhorse:trims/models/armor/scarf_leggings",
-        "wolfhorse:trims/models/armor/fur",
-        "wolfhorse:trims/models/armor/fur_leggings",
-        "wolfhorse:trims/models/armor/fur_wraps",
-        "wolfhorse:trims/models/armor/fur_wraps_leggings"
+        "fotm:trims/models/armor/pelt",
+        "fotm:trims/models/armor/pelt_leggings",
+        "fotm:trims/models/armor/scarf",
+        "fotm:trims/models/armor/scarf_leggings",
+        "fotm:trims/models/armor/fur",
+        "fotm:trims/models/armor/fur_leggings",
+        "fotm:trims/models/armor/fur_wraps",
+        "fotm:trims/models/armor/fur_wraps_leggings"
       ],
       "palette_key": "trims/color_palettes/trim_palette",
       "permutations": {
-        "wolfhorse_plains_fur": "wolfhorse:trims/color_palettes/plains_fur",
-        "wolfhorse_forest_fur": "wolfhorse:trims/color_palettes/forest_fur",
-        "wolfhorse_tundra_fur": "wolfhorse:trims/color_palettes/tundra_fur"
+        "fotm_plains_fur": "fotm:trims/color_palettes/plains_fur",
+        "fotm_forest_fur": "fotm:trims/color_palettes/forest_fur",
+        "fotm_tundra_fur": "fotm:trims/color_palettes/tundra_fur"
       }
     }
   ]

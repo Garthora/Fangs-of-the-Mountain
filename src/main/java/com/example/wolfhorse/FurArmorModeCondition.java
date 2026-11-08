@@ -7,7 +7,7 @@ import net.minecraftforge.common.crafting.conditions.ICondition;
 import net.minecraftforge.common.crafting.conditions.IConditionSerializer;
 
 /**
- * Recipe condition: {"type": "wolfhorse:fur_armor", "allows": "sets"} or {"allows": "trim"}.
+ * Recipe condition: {"type": "fotm:fur_armor", "allows": "sets"} or {"allows": "trim"}.
  * Turns Fur armor recipes and the Fur Armor Trim recipes on or off from the config.
  */
 public record FurArmorModeCondition(String allows) implements ICondition {

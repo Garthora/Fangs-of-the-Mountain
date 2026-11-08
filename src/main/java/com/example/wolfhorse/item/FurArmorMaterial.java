@@ -65,7 +65,7 @@ public enum FurArmorMaterial implements ArmorMaterial {
 
     @Override
     public String getName() {
-        // textures: assets/wolfhorse/textures/models/armor/<name>_layer_1.png and _layer_2.png
+        // textures: assets/fotm/textures/models/armor/<name>_layer_1.png and _layer_2.png
         return WolfHorseMod.MODID + ":" + this.name;
     }
 

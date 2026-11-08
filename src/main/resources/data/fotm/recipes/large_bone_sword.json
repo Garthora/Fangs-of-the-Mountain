@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "pattern": [
+    "B",
+    "B",
+    "F"
+  ],
+  "key": {
+    "B": {
+      "item": "fotm:direwolf_bone"
+    },
+    "F": {
+      "item": "fotm:fang"
+    }
+  },
+  "result": {
+    "item": "fotm:large_bone_sword"
+  }
+}

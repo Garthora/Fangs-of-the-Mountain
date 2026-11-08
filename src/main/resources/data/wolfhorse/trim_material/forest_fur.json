@@ -1,9 +1,9 @@
 {
-  "asset_name": "wolfhorse_forest_fur",
+  "asset_name": "fotm_forest_fur",
   "description": {
     "color": "#6B4A2F",
-    "translate": "trim_material.wolfhorse.forest_fur"
+    "translate": "trim_material.fotm.forest_fur"
   },
-  "ingredient": "wolfhorse:forest_fur",
+  "ingredient": "minecraft:barrier",
   "item_model_index": 0.02
 }

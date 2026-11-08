@@ -54,7 +54,7 @@ public class WolfWhistleItem extends Item {
         }
 
         public Component label() {
-            return Component.translatable("item.wolfhorse.wolf_whistle.mode." + this.key);
+            return Component.translatable("item.fotm.wolf_whistle.mode." + this.key);
         }
     }
 
@@ -85,7 +85,7 @@ public class WolfWhistleItem extends Item {
             return;
         }
         stack.getOrCreateTag().putInt("Mode", index);
-        player.displayClientMessage(Component.translatable("message.wolfhorse.whistle.mode",
+        player.displayClientMessage(Component.translatable("message.fotm.whistle.mode",
                 all[index].label().copy().withStyle(ChatFormatting.GOLD)), true);
     }
 
@@ -105,10 +105,10 @@ public class WolfWhistleItem extends Item {
                 tag.putString("WolfName", wolf.getName().getString());
                 level.playSound(null, player.getX(), player.getY(), player.getZ(),
                         SoundEvents.NOTE_BLOCK_FLUTE.value(), SoundSource.PLAYERS, 0.7F, 1.8F);
-                player.displayClientMessage(Component.translatable("message.wolfhorse.whistle.tagged",
+                player.displayClientMessage(Component.translatable("message.fotm.whistle.tagged",
                         wolf.getName()), true);
             } else {
-                player.displayClientMessage(Component.translatable("message.wolfhorse.whistle.not_yours"), true);
+                player.displayClientMessage(Component.translatable("message.fotm.whistle.not_yours"), true);
             }
         }
         return InteractionResult.sidedSuccess(level.isClientSide);
@@ -213,7 +213,7 @@ public class WolfWhistleItem extends Item {
     }
 
     private static void say(Player player, String key, Object... args) {
-        player.displayClientMessage(Component.translatable("message.wolfhorse.whistle." + key, args), true);
+        player.displayClientMessage(Component.translatable("message.fotm.whistle." + key, args), true);
     }
 
     /** The open spot next to the block the player is looking at, up to 64 blocks away. */
@@ -252,16 +252,16 @@ public class WolfWhistleItem extends Item {
     public void appendHoverText(ItemStack stack, @Nullable Level level, List<Component> tooltip, TooltipFlag flag) {
         CompoundTag tag = stack.getTag();
         if (tag != null && tag.hasUUID("Wolf")) {
-            tooltip.add(Component.translatable("item.wolfhorse.wolf_whistle.tagged",
+            tooltip.add(Component.translatable("item.fotm.wolf_whistle.tagged",
                     Component.literal(tag.getString("WolfName")).withStyle(ChatFormatting.AQUA))
                     .withStyle(ChatFormatting.GRAY));
         } else {
-            tooltip.add(Component.translatable("item.wolfhorse.wolf_whistle.untagged").withStyle(ChatFormatting.GRAY));
+            tooltip.add(Component.translatable("item.fotm.wolf_whistle.untagged").withStyle(ChatFormatting.GRAY));
         }
-        tooltip.add(Component.translatable("message.wolfhorse.whistle.mode",
+        tooltip.add(Component.translatable("message.fotm.whistle.mode",
                 getMode(stack).label().copy().withStyle(ChatFormatting.GOLD)).withStyle(ChatFormatting.GRAY));
-        tooltip.add(Component.translatable("item.wolfhorse.wolf_whistle.help.tag").withStyle(ChatFormatting.DARK_GRAY));
-        tooltip.add(Component.translatable("item.wolfhorse.wolf_whistle.help.tap").withStyle(ChatFormatting.DARK_GRAY));
-        tooltip.add(Component.translatable("item.wolfhorse.wolf_whistle.help.hold").withStyle(ChatFormatting.DARK_GRAY));
+        tooltip.add(Component.translatable("item.fotm.wolf_whistle.help.tag").withStyle(ChatFormatting.DARK_GRAY));
+        tooltip.add(Component.translatable("item.fotm.wolf_whistle.help.tap").withStyle(ChatFormatting.DARK_GRAY));
+        tooltip.add(Component.translatable("item.fotm.wolf_whistle.help.hold").withStyle(ChatFormatting.DARK_GRAY));
     }
 }

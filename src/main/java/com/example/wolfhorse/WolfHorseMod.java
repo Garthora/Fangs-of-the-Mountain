@@ -43,7 +43,7 @@ import java.util.List;
 
 @Mod(WolfHorseMod.MODID)
 public class WolfHorseMod {
-    public static final String MODID = "wolfhorse";
+    public static final String MODID = "fotm";
 
     public static final DeferredRegister<EntityType<?>> ENTITY_TYPES =
             DeferredRegister.create(ForgeRegistries.ENTITY_TYPES, MODID);
@@ -52,13 +52,13 @@ public class WolfHorseMod {
     public static final DeferredRegister<CreativeModeTab> TABS =
             DeferredRegister.create(Registries.CREATIVE_MODE_TAB, MODID);
 
-    // The original id "wolf_horse" is kept for the Plains DireWolf so existing worlds keep theirs.
-    public static final RegistryObject<EntityType<WolfHorseEntity>> PLAINS_DIREWOLF = direwolf("wolf_horse");
+    // The Plains DireWolf (called wolf_horse before 1.22; old worlds are converted on load).
+    public static final RegistryObject<EntityType<WolfHorseEntity>> PLAINS_DIREWOLF = direwolf("plains_direwolf");
     public static final RegistryObject<EntityType<WolfHorseEntity>> FOREST_DIREWOLF = direwolf("forest_direwolf");
     public static final RegistryObject<EntityType<WolfHorseEntity>> TUNDRA_DIREWOLF = direwolf("tundra_direwolf");
 
     public static final RegistryObject<Item> PLAINS_DIREWOLF_SPAWN_EGG =
-            ITEMS.register("wolf_horse_spawn_egg",
+            ITEMS.register("plains_direwolf_spawn_egg",
                     () -> new ForgeSpawnEggItem(PLAINS_DIREWOLF, 0xD2B48C, 0x4A4A4A, new Item.Properties()));
     public static final RegistryObject<Item> FOREST_DIREWOLF_SPAWN_EGG =
             ITEMS.register("forest_direwolf_spawn_egg",
@@ -109,7 +109,7 @@ public class WolfHorseMod {
     public static final RegistryObject<Item> TUNDRA_PELT =
             ITEMS.register("tundra_pelt", () -> new PeltItem(new Item.Properties().stacksTo(1), FurVariant.TUNDRA));
 
-    // ---------- Armor trims (patterns defined in data/wolfhorse/trim_pattern/) ----------
+    // ---------- Armor trims (patterns defined in data/fotm/trim_pattern/) ----------
     public static final ResourceKey<TrimPattern> PELT_TRIM =
             ResourceKey.create(Registries.TRIM_PATTERN, new ResourceLocation(MODID, "pelt"));
     public static final ResourceKey<TrimPattern> SCARF_TRIM =
@@ -146,7 +146,7 @@ public class WolfHorseMod {
     /** Creative tab with everything from Fangs of the Mountains. */
     public static final RegistryObject<CreativeModeTab> TAB = TABS.register("fangs_of_the_mountains",
             () -> CreativeModeTab.builder()
-                    .title(Component.translatable("itemGroup.wolfhorse"))
+                    .title(Component.translatable("itemGroup.fotm"))
                     .icon(() -> new ItemStack(WOLF_WHISTLE.get()))
                     .withTabsBefore(CreativeModeTabs.SPAWN_EGGS)
                     .displayItems((params, out) -> tabItems().stream().filter(WolfHorseMod::shownInCreative)

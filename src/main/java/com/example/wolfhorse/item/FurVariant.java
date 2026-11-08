@@ -11,7 +11,7 @@ public enum FurVariant {
     TUNDRA("tundra");  // white to grey
 
     public final String id;
-    /** The trim material made from this fur, e.g. wolfhorse:forest_fur. */
+    /** The trim material made from this fur, e.g. fotm:forest_fur. */
     public final ResourceLocation trimMaterial;
 
     FurVariant(String id) {
@@ -23,11 +23,22 @@ public enum FurVariant {
     public static FurVariant fromTrim(ArmorTrim trim) {
         return trim.material().unwrapKey().map(key -> {
             for (FurVariant v : values()) {
-                if (v.trimMaterial.equals(key.location())) {
+                if (isOurs(key.location()) && v.trimMaterial.getPath().equals(key.location().getPath())) {
                     return v;
                 }
             }
             return PLAINS;
         }).orElse(PLAINS);
+    }
+
+    /** Is this trim's pattern ours with this name (e.g. "pelt")? Also true for trims made before the id change. */
+    public static boolean hasPattern(ArmorTrim trim, String name) {
+        return trim.pattern().unwrapKey()
+                .map(key -> isOurs(key.location()) && key.location().getPath().equals(name))
+                .orElse(false);
+    }
+
+    private static boolean isOurs(ResourceLocation id) {
+        return id.getNamespace().equals(WolfHorseMod.MODID) || id.getNamespace().equals("wolfhorse");
     }
 }

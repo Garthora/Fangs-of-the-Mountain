@@ -1,6 +1,0 @@
-{
-  "parent": "minecraft:item/generated",
-  "textures": {
-    "layer0": "wolfhorse:item/fur_armor_trim_smithing_template"
-  }
-}

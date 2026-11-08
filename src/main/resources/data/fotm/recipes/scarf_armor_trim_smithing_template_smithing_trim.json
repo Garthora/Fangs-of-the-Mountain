@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:smithing_trim",
+  "template": {
+    "item": "fotm:scarf_armor_trim_smithing_template"
+  },
+  "base": {
+    "tag": "fotm:trimmable_helmets"
+  },
+  "addition": {
+    "tag": "minecraft:trim_materials"
+  }
+}

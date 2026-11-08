@@ -1,0 +1,22 @@
+{
+  "structures": [
+    {
+      "structure": "fotm:forest_den",
+      "weight": 1
+    },
+    {
+      "structure": "fotm:plains_den",
+      "weight": 1
+    },
+    {
+      "structure": "fotm:tundra_den",
+      "weight": 1
+    }
+  ],
+  "placement": {
+    "type": "minecraft:random_spread",
+    "spacing": 28,
+    "separation": 10,
+    "salt": 1847261937
+  }
+}

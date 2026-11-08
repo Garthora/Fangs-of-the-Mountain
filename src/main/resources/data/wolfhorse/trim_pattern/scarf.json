@@ -1,7 +1,7 @@
 {
-  "asset_id": "wolfhorse:scarf",
+  "asset_id": "fotm:scarf",
   "description": {
-    "translate": "trim_pattern.wolfhorse.scarf"
+    "translate": "trim_pattern.fotm.scarf"
   },
-  "template_item": "wolfhorse:scarf_armor_trim_smithing_template"
+  "template_item": "minecraft:barrier"
 }

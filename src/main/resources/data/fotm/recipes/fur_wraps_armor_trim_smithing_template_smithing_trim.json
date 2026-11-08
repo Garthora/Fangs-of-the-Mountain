@@ -1,0 +1,18 @@
+{
+  "conditions": [
+    {
+      "type": "fotm:fur_armor",
+      "allows": "trim"
+    }
+  ],
+  "type": "minecraft:smithing_trim",
+  "template": {
+    "item": "fotm:fur_wraps_armor_trim_smithing_template"
+  },
+  "base": {
+    "tag": "fotm:trimmable_leggings"
+  },
+  "addition": {
+    "tag": "fotm:furs"
+  }
+}

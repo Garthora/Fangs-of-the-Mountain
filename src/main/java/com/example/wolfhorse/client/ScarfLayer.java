@@ -69,7 +69,7 @@ public class ScarfLayer<T extends LivingEntity, M extends HumanoidModel<T>> exte
             return;
         }
         var trim = ArmorTrim.getTrim(entity.level().registryAccess(), helmet);
-        if (trim.isEmpty() || !trim.get().pattern().is(WolfHorseMod.SCARF_TRIM)) {
+        if (trim.isEmpty() || !FurVariant.hasPattern(trim.get(), "scarf")) {
             return;
         }
         FurVariant variant = FurVariant.fromTrim(trim.get());

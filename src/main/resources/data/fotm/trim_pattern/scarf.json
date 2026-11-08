@@ -1,0 +1,7 @@
+{
+  "asset_id": "fotm:scarf",
+  "description": {
+    "translate": "trim_pattern.fotm.scarf"
+  },
+  "template_item": "fotm:scarf_armor_trim_smithing_template"
+}

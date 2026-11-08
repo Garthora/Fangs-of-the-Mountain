@@ -1,8 +1,8 @@
 {
   "replace": false,
   "values": [
-    "wolfhorse:fur_helmet",
-    "wolfhorse:forest_fur_helmet",
-    "wolfhorse:tundra_fur_helmet"
+    "fotm:fur_helmet",
+    "fotm:forest_fur_helmet",
+    "fotm:tundra_fur_helmet"
   ]
 }

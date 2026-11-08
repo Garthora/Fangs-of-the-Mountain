@@ -1,7 +1,7 @@
 {
-  "asset_id": "wolfhorse:pelt",
+  "asset_id": "fotm:pelt",
   "description": {
-    "translate": "trim_pattern.wolfhorse.pelt"
+    "translate": "trim_pattern.fotm.pelt"
   },
-  "template_item": "wolfhorse:pelt_armor_trim_smithing_template"
+  "template_item": "minecraft:barrier"
 }

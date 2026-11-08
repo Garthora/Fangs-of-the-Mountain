@@ -1,0 +1,17 @@
+{
+  "values": [
+    "minecraft:leather_chestplate",
+    "minecraft:chainmail_chestplate",
+    "minecraft:iron_chestplate",
+    "minecraft:golden_chestplate",
+    "minecraft:diamond_chestplate",
+    "minecraft:netherite_chestplate",
+    "fotm:fur_chestplate",
+    "fotm:forest_fur_chestplate",
+    "fotm:tundra_fur_chestplate",
+    {
+      "id": "#forge:armors/chestplates",
+      "required": false
+    }
+  ]
+}

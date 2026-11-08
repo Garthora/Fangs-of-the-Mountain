@@ -82,7 +82,7 @@ public class PeltLayer<T extends LivingEntity, M extends EntityModel<T>> extends
         }
         RegistryAccess access = entity.level().registryAccess();
         var trim = ArmorTrim.getTrim(access, chest);
-        if (trim.isPresent() && trim.get().pattern().is(WolfHorseMod.PELT_TRIM)) {
+        if (trim.isPresent() && FurVariant.hasPattern(trim.get(), "pelt")) {
             return FurVariant.fromTrim(trim.get());
         }
         return null;

@@ -1,0 +1,7 @@
+{
+  "asset_id": "fotm:pelt",
+  "description": {
+    "translate": "trim_pattern.fotm.pelt"
+  },
+  "template_item": "fotm:pelt_armor_trim_smithing_template"
+}

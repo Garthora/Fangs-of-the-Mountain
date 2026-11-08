@@ -1,7 +1,10 @@
 name: Server test
 
-# Starts a real Forge server with the mod, places each Den and checks the DireWolf pack
-# appears, and makes sure each Den can be found with /locate. Runs on the smoke-test branch only.
+# Starts real Forge servers with the mod:
+#  1. Old world: save a world with the last "wolfhorse" release (1.21.0) holding a tamed DireWolf,
+#     a Plains DireWolf, and a chest of old items (fur, spawn egg, pelt-trimmed armor, a packed backpack).
+#  2. Load that same world with this build and check everything converted to the new "fotm" ids.
+#  3. Place each Den and check the DireWolf pack, and find each Den with /locate.
 on:
   push:
     branches: [ smoke-test ]
@@ -10,7 +13,7 @@ on:
 jobs:
   server-test:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 40
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-java@v4
@@ -25,52 +28,95 @@ jobs:
           MC=$(grep '^minecraft_version=' gradle.properties | cut -d= -f2)
           FORGE=$(grep '^forge_version=' gradle.properties | cut -d= -f2)
           curl -sSfL -o installer.jar "https://maven.minecraftforge.net/net/minecraftforge/forge/${MC}-${FORGE}/forge-${MC}-${FORGE}-installer.jar"
-          mkdir server && cd server && java -jar ../installer.jar --installServer > install.log 2>&1 && tail -3 install.log
-          mkdir -p mods && cp ../build/libs/$(grep '^jar_name=' ../gradle.properties | cut -d= -f2)-*.jar mods/
-          ls mods
+          mkdir server && cd server && java -jar ../installer.jar --installServer > install.log 2>&1 && tail -2 install.log
+          mkdir -p mods && chmod +x run.sh
           echo "eula=true" > eula.txt
           printf "online-mode=false\nlevel-seed=12345\nspawn-protection=0\nmax-tick-time=-1\n" > server.properties
-      - name: Run the server and test the Dens
-        working-directory: server
-        run: |
-          chmod +x run.sh
-          mkfifo console
-          ./run.sh nogui < console > server.log 2>&1 &
+          curl -sSfL -o ../old.jar "https://github.com/${{ github.repository }}/releases/download/v1.21.0/fangs-of-the-mountains-1.21.0.jar"
+          cat > ../serve.sh <<'SH'
+          # usage: serve.sh <log> <commands file>   (one command per line, "wait N" pauses)
+          cd server; rm -f console; mkfifo console
+          ./run.sh nogui < console > "$1" 2>&1 &
           exec 3>console
-          for i in $(seq 1 120); do grep -q 'Done (' server.log && break; sleep 5; done
-          grep -q 'Done (' server.log || { tail -80 server.log; echo "Server did not start"; exit 1; }
-          send() { echo "$1" >&3; sleep "${2:-3}"; }
-          send "forceload add -48 -48 48 48" 10
-          send "place structure wolfhorse:forest_den 0 100 0" 8
-          send "place structure wolfhorse:plains_den 30 100 0" 8
-          send "place structure wolfhorse:tundra_den -30 100 0" 8
-          send "execute if entity @e[type=wolfhorse:forest_direwolf]" 3
-          send "execute if entity @e[type=wolfhorse:wolf_horse]" 3
-          send "execute if entity @e[type=wolfhorse:tundra_direwolf]" 3
-          send "execute as @e[type=wolfhorse:wolf_horse] run data get entity @s Age" 3
-          send "data get entity @e[type=wolfhorse:forest_direwolf,limit=1] Attributes" 3
-          send "locate structure wolfhorse:plains_den" 40
-          send "locate structure wolfhorse:forest_den" 40
-          send "locate structure wolfhorse:tundra_den" 40
-          send "stop" 25
-          exec 3>&-
-          wait || true
-          echo "================ server log ================"
-          grep -vE 'ModLauncher|Loading|mixin|Mixin|FML|ForgeConfigSpec|net.minecraftforge' server.log | tail -120 || true
-          echo "================ results ================"
-          grep -E 'wolfhorse|Test passed|Test failed|nearest|Could not find|Generated structure|Error|Exception' server.log | grep -v 'Loading' | tail -60 || true
+          for i in $(seq 1 120); do grep -q 'Done (' "$1" && break; sleep 5; done
+          grep -q 'Done (' "$1" || { tail -60 "$1"; echo "Server did not start"; exit 1; }
+          while IFS= read -r line; do
+            case "$line" in wait*) sleep "${line#wait }";; *) echo "$line" >&3; sleep 3;; esac
+          done < "$2"
+          echo stop >&3; sleep 25; exec 3>&-; wait || true
+          SH
+          chmod +x ../serve.sh
+      - name: "1. Save a world with the old version (1.21.0)"
+        run: |
+          cp old.jar server/mods/
+          cat > old.cmds <<'C'
+          forceload add -16 -16 16 16
+          wait 5
+          setblock 2 100 2 stone
+          setblock 5 100 5 stone
+          summon wolfhorse:forest_direwolf 5 101 5 {Tame:1b,CustomName:'"Ash"',PersistenceRequired:1b}
+          summon wolfhorse:wolf_horse 2 101 2 {PersistenceRequired:1b}
+          setblock 0 100 0 chest{Items:[{Slot:0b,id:"wolfhorse:fur",Count:5b},{Slot:1b,id:"wolfhorse:wolf_horse_spawn_egg",Count:1b},{Slot:2b,id:"minecraft:iron_chestplate",Count:1b,tag:{Trim:{pattern:"wolfhorse:pelt",material:"wolfhorse:forest_fur"}}},{Slot:3b,id:"wolfhorse:direwolf_backpack",Count:1b,tag:{DireWolf:{id:"wolfhorse:tundra_direwolf"},DireWolfName:"Frost"}}]}
+          wait 5
+          execute if entity @e[type=wolfhorse:forest_direwolf]
+          data get block 0 100 0 Items
+          C
+          ./serve.sh old.log ../old.cmds
+          grep -E 'Test passed|Test failed|has the following block data|Unknown|Error' server/old.log | cut -c1-400
+      - name: "2. Load that world with this build"
+        run: |
+          rm server/mods/*.jar
+          cp build/libs/$(grep '^jar_name=' gradle.properties | cut -d= -f2)-*.jar server/mods/
+          cat > new.cmds <<'C'
+          wait 5
+          execute if entity @e[type=fotm:forest_direwolf,name=Ash]
+          execute if entity @e[type=fotm:plains_direwolf]
+          data get block 0 100 0 Items
+          C
+          ./serve.sh migrate.log ../new.cmds
+          echo "======== migration results ========"
+          grep -E 'Test passed|Test failed|has the following block data|wolfhorse|missing|Missing|remap' server/migrate.log | cut -c1-900
           FAIL=0
-          grep -q 'Generated structure.*forest_den\|Generated structure "wolfhorse:forest_den"' server.log || { echo "FAIL: forest den not placed"; FAIL=1; }
-          grep -q 'Generated structure.*plains_den\|Generated structure "wolfhorse:plains_den"' server.log || { echo "FAIL: plains den not placed"; FAIL=1; }
-          grep -q 'Generated structure.*tundra_den\|Generated structure "wolfhorse:tundra_den"' server.log || { echo "FAIL: tundra den not placed"; FAIL=1; }
-          [ "$(grep -c 'Test passed, count: [3-9]' server.log)" -ge 3 ] || { echo "FAIL: DireWolf packs missing"; FAIL=1; }
-          [ "$(grep -c 'nearest wolfhorse:.*_den' server.log)" -ge 3 ] || echo "WARN: not every den found by /locate"
-          grep -q 'Plains DireWolf Pup has the following entity data: -2[0-9]\{4\}' server.log || echo "WARN: no pup age found"
-          grep -iE 'exception|error' server.log | grep -i wolfhorse && FAIL=1
+          [ "$(grep -c 'Test passed' server/migrate.log)" -ge 2 ] || { echo "FAIL: old DireWolves did not carry over"; FAIL=1; }
+          ITEMS=$(grep 'has the following block data' server/migrate.log)
+          for want in 'fotm:fur' 'fotm:plains_direwolf_spawn_egg' 'wolfhorse:pelt' 'fotm:direwolf_backpack' 'Frost'; do
+            echo "$ITEMS" | grep -q "$want" || { echo "FAIL: chest is missing $want"; FAIL=1; }
+          done
           exit $FAIL
-      - name: Upload server log
+      - name: "3. Dens"
+        run: |
+          cat > den.cmds <<'C'
+          forceload add -48 -48 48 48
+          wait 10
+          place structure fotm:forest_den 0 120 0
+          wait 5
+          place structure fotm:plains_den 30 120 0
+          wait 5
+          place structure fotm:tundra_den -30 120 0
+          wait 5
+          execute if entity @e[type=fotm:forest_direwolf,distance=..20,x=0,y=120,z=0]
+          execute if entity @e[type=fotm:plains_direwolf,distance=..20,x=30,y=120,z=0]
+          execute if entity @e[type=fotm:tundra_direwolf,distance=..20,x=-30,y=120,z=0]
+          execute as @e[type=fotm:plains_direwolf,distance=..20,x=30,y=120,z=0] run data get entity @s Age
+          locate structure fotm:plains_den
+          wait 30
+          locate structure fotm:forest_den
+          wait 30
+          locate structure fotm:tundra_den
+          wait 30
+          C
+          ./serve.sh den.log ../den.cmds
+          echo "======== den results ========"
+          grep -E 'Generated structure|Test passed|Test failed|entity data|nearest|Could not' server/den.log | cut -c1-300
+          FAIL=0
+          for d in forest plains tundra; do grep -q "Generated structure \"fotm:${d}_den\"" server/den.log || { echo "FAIL: $d den not placed"; FAIL=1; }; done
+          [ "$(grep -c 'Test passed, count: [3-9]' server/den.log)" -ge 3 ] || { echo "FAIL: DireWolf packs missing"; FAIL=1; }
+          [ "$(grep -c 'nearest fotm:.*_den' server/den.log)" -ge 3 ] || echo "WARN: not every den found by /locate"
+          grep -iE 'exception' server/den.log server/migrate.log | grep -iE 'fotm|wolfhorse' && FAIL=1
+          exit $FAIL
+      - name: Upload server logs
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: server-log
-          path: server/server.log
+          name: server-logs
+          path: server/*.log

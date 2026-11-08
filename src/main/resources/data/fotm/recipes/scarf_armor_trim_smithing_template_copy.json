@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "DTD",
+    "DFD",
+    "DDD"
+  ],
+  "key": {
+    "D": {
+      "item": "minecraft:diamond"
+    },
+    "T": {
+      "item": "fotm:scarf_armor_trim_smithing_template"
+    },
+    "F": {
+      "tag": "fotm:furs"
+    }
+  },
+  "result": {
+    "item": "fotm:scarf_armor_trim_smithing_template",
+    "count": 2
+  }
+}

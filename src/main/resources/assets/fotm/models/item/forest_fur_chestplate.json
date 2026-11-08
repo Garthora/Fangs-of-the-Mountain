@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "fotm:item/forest_fur_chestplate"
+  }
+}

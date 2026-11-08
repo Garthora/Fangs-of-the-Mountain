@@ -6,7 +6,7 @@
       "entries": [
         {
           "type": "minecraft:item",
-          "name": "wolfhorse:forest_fur",
+          "name": "fotm:forest_fur",
           "weight": 1,
           "functions": [
             {
@@ -26,7 +26,7 @@
       "entries": [
         {
           "type": "minecraft:item",
-          "name": "wolfhorse:direwolf_bone",
+          "name": "fotm:direwolf_bone",
           "weight": 1,
           "functions": [
             {
@@ -130,7 +130,7 @@
       "entries": [
         {
           "type": "minecraft:item",
-          "name": "wolfhorse:fang",
+          "name": "fotm:fang",
           "weight": 1,
           "functions": [
             {
@@ -160,32 +160,32 @@
         },
         {
           "type": "minecraft:item",
-          "name": "wolfhorse:pelt_armor_trim_smithing_template",
+          "name": "fotm:pelt_armor_trim_smithing_template",
           "weight": 6
         },
         {
           "type": "minecraft:item",
-          "name": "wolfhorse:scarf_armor_trim_smithing_template",
+          "name": "fotm:scarf_armor_trim_smithing_template",
           "weight": 6
         },
         {
           "type": "minecraft:item",
-          "name": "wolfhorse:fur_armor_trim_smithing_template",
+          "name": "fotm:fur_armor_trim_smithing_template",
           "weight": 4
         },
         {
           "type": "minecraft:item",
-          "name": "wolfhorse:fur_wraps_armor_trim_smithing_template",
+          "name": "fotm:fur_wraps_armor_trim_smithing_template",
           "weight": 4
         },
         {
           "type": "minecraft:item",
-          "name": "wolfhorse:forest_pelt",
+          "name": "fotm:forest_pelt",
           "weight": 5
         },
         {
           "type": "minecraft:item",
-          "name": "wolfhorse:wolf_whistle",
+          "name": "fotm:wolf_whistle",
           "weight": 3
         }
       ]

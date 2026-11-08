@@ -1,8 +1,8 @@
 {
   "replace": false,
   "values": [
-    "wolfhorse:fur_boots",
-    "wolfhorse:forest_fur_boots",
-    "wolfhorse:tundra_fur_boots"
+    "fotm:fur_boots",
+    "fotm:forest_fur_boots",
+    "fotm:tundra_fur_boots"
   ]
 }

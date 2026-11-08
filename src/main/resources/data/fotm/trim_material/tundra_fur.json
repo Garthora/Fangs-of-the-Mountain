@@ -1,0 +1,9 @@
+{
+  "asset_name": "fotm_tundra_fur",
+  "description": {
+    "color": "#E8EAEE",
+    "translate": "trim_material.fotm.tundra_fur"
+  },
+  "ingredient": "fotm:tundra_fur",
+  "item_model_index": 0.03
+}

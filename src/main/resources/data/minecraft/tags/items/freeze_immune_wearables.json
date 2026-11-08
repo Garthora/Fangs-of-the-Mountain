@@ -1,8 +1,8 @@
 {
   "replace": false,
   "values": [
-    "wolfhorse:pelt",
-    "wolfhorse:forest_pelt",
-    "wolfhorse:tundra_pelt"
+    "fotm:pelt",
+    "fotm:forest_pelt",
+    "fotm:tundra_pelt"
   ]
 }

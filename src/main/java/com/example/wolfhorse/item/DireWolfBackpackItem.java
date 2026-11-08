@@ -1,5 +1,6 @@
 package com.example.wolfhorse.item;
 
+import com.example.wolfhorse.OldIdMigration;
 import com.example.wolfhorse.WolfHorseConfig;
 import com.example.wolfhorse.entity.WolfHorseEntity;
 import net.minecraft.ChatFormatting;
@@ -44,7 +45,7 @@ public class DireWolfBackpackItem extends Item {
     }
 
     private static void say(Player player, String key, Object... args) {
-        player.displayClientMessage(Component.translatable("message.wolfhorse.backpack." + key, args), true);
+        player.displayClientMessage(Component.translatable("message.fotm.backpack." + key, args), true);
     }
 
     // ---------- putting a DireWolf in ----------
@@ -97,7 +98,8 @@ public class DireWolfBackpackItem extends Item {
         }
         Player player = context.getPlayer();
         BlockPos pos = context.getClickedPos().relative(context.getClickedFace());
-        CompoundTag data = stack.getTag().getCompound(WOLF);
+        CompoundTag data = stack.getTag().getCompound(WOLF).copy();
+        OldIdMigration.fixEntityId(data); // DireWolves packed by versions before 1.22
 
         Optional<Entity> made = EntityType.create(data, server);
         if (made.isEmpty() || !(made.get() instanceof WolfHorseEntity wolf)) {
@@ -152,14 +154,14 @@ public class DireWolfBackpackItem extends Item {
     @Override
     public void appendHoverText(ItemStack stack, @Nullable Level level, List<Component> tooltip, TooltipFlag flag) {
         if (hasWolf(stack)) {
-            tooltip.add(Component.translatable("item.wolfhorse.direwolf_backpack.holding",
+            tooltip.add(Component.translatable("item.fotm.direwolf_backpack.holding",
                     Component.literal(stack.getTag().getString(NAME)).withStyle(ChatFormatting.AQUA))
                     .withStyle(ChatFormatting.GRAY));
-            tooltip.add(Component.translatable("item.wolfhorse.direwolf_backpack.help.release")
+            tooltip.add(Component.translatable("item.fotm.direwolf_backpack.help.release")
                     .withStyle(ChatFormatting.DARK_GRAY));
         } else {
-            tooltip.add(Component.translatable("item.wolfhorse.direwolf_backpack.empty").withStyle(ChatFormatting.GRAY));
-            tooltip.add(Component.translatable("item.wolfhorse.direwolf_backpack.help.store")
+            tooltip.add(Component.translatable("item.fotm.direwolf_backpack.empty").withStyle(ChatFormatting.GRAY));
+            tooltip.add(Component.translatable("item.fotm.direwolf_backpack.help.store")
                     .withStyle(ChatFormatting.DARK_GRAY));
         }
     }

@@ -1,9 +1,9 @@
 {
-  "asset_name": "wolfhorse_tundra_fur",
+  "asset_name": "fotm_tundra_fur",
   "description": {
     "color": "#E8EAEE",
-    "translate": "trim_material.wolfhorse.tundra_fur"
+    "translate": "trim_material.fotm.tundra_fur"
   },
-  "ingredient": "wolfhorse:tundra_fur",
+  "ingredient": "minecraft:barrier",
   "item_model_index": 0.03
 }

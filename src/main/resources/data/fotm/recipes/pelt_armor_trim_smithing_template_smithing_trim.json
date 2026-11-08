@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:smithing_trim",
+  "template": {
+    "item": "fotm:pelt_armor_trim_smithing_template"
+  },
+  "base": {
+    "tag": "fotm:trimmable_chestplates"
+  },
+  "addition": {
+    "tag": "minecraft:trim_materials"
+  }
+}

@@ -1,7 +1,7 @@
 {
-  "asset_id": "wolfhorse:fur",
+  "asset_id": "fotm:fur",
   "description": {
-    "translate": "trim_pattern.wolfhorse.fur"
+    "translate": "trim_pattern.fotm.fur"
   },
-  "template_item": "wolfhorse:fur_armor_trim_smithing_template"
+  "template_item": "minecraft:barrier"
 }

@@ -1,8 +1,8 @@
 {
   "replace": false,
   "values": [
-    "wolfhorse:fur_chestplate",
-    "wolfhorse:forest_fur_chestplate",
-    "wolfhorse:tundra_fur_chestplate"
+    "fotm:fur_chestplate",
+    "fotm:forest_fur_chestplate",
+    "fotm:tundra_fur_chestplate"
   ]
 }

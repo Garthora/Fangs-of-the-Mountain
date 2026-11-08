@@ -1,0 +1,7 @@
+{
+  "asset_id": "fotm:fur_wraps",
+  "description": {
+    "translate": "trim_pattern.fotm.fur_wraps"
+  },
+  "template_item": "fotm:fur_wraps_armor_trim_smithing_template"
+}
