@@ -94,10 +94,10 @@ jobs:
           wait 5
           place structure fotm:tundra_den -30 120 0
           wait 5
-          execute if entity @e[type=fotm:forest_direwolf,distance=..20,x=0,y=120,z=0]
-          execute if entity @e[type=fotm:plains_direwolf,distance=..20,x=30,y=120,z=0]
-          execute if entity @e[type=fotm:tundra_direwolf,distance=..20,x=-30,y=120,z=0]
-          execute as @e[type=fotm:plains_direwolf,distance=..20,x=30,y=120,z=0] run data get entity @s Age
+          execute if entity @e[type=fotm:forest_direwolf,x=-12,y=-64,z=-12,dx=24,dy=400,dz=24]
+          execute if entity @e[type=fotm:plains_direwolf,x=18,y=-64,z=-12,dx=24,dy=400,dz=24]
+          execute if entity @e[type=fotm:tundra_direwolf,x=-42,y=-64,z=-12,dx=24,dy=400,dz=24]
+          execute as @e[type=fotm:plains_direwolf,x=18,y=-64,z=-12,dx=24,dy=400,dz=24] run data get entity @s Age
           locate structure fotm:plains_den
           wait 30
           locate structure fotm:forest_den
