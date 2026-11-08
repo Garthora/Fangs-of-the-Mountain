@@ -73,25 +73,20 @@ public class PeltLayer<T extends LivingEntity, M extends EntityModel<T>> extends
         pose.popPose();
     }
 
-    /** Fur colour of the first worn armor piece with the Pelt trim, or null if none has it. */
+    /** Fur colour if the worn chest piece has the Pelt trim, or null if it doesn't. */
     @Nullable
     private static FurVariant peltTrimVariant(LivingEntity entity) {
+        ItemStack chest = entity.getItemBySlot(EquipmentSlot.CHEST);
+        if (chest.isEmpty()) {
+            return null;
+        }
         RegistryAccess access = entity.level().registryAccess();
-        for (EquipmentSlot slot : ARMOR_SLOTS) {
-            ItemStack piece = entity.getItemBySlot(slot);
-            if (piece.isEmpty()) {
-                continue;
-            }
-            var trim = ArmorTrim.getTrim(access, piece);
-            if (trim.isPresent() && trim.get().pattern().is(WolfHorseMod.PELT_TRIM)) {
-                return FurVariant.fromTrim(trim.get());
-            }
+        var trim = ArmorTrim.getTrim(access, chest);
+        if (trim.isPresent() && trim.get().pattern().is(WolfHorseMod.PELT_TRIM)) {
+            return FurVariant.fromTrim(trim.get());
         }
         return null;
     }
-
-    private static final EquipmentSlot[] ARMOR_SLOTS = {
-            EquipmentSlot.HEAD, EquipmentSlot.CHEST, EquipmentSlot.LEGS, EquipmentSlot.FEET};
 
     /** Vanilla cape physics, rotating the whole pelt around the shoulders. */
     private static void applyCapeSwing(PoseStack pose, Player p, float pt) {

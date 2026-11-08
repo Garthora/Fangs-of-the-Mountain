@@ -4,7 +4,7 @@
     "item": "wolfhorse:pelt_armor_trim_smithing_template"
   },
   "base": {
-    "tag": "minecraft:trimmable_armor"
+    "tag": "wolfhorse:trimmable_chestplates"
   },
   "addition": {
     "tag": "minecraft:trim_materials"
