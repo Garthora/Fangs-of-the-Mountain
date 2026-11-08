@@ -88,7 +88,7 @@ jobs:
           cat > den.cmds <<'C'
           forceload add -48 -48 48 48
           wait 10
-          place structure fotm:forest_den 0 120 0
+          place structure fotm:dark_forest_den 0 120 0
           wait 5
           place structure fotm:plains_den 30 120 0
           wait 5
@@ -113,7 +113,7 @@ jobs:
           execute as @e[type=item,x=35,y=-64,z=-45,dx=10,dy=400,dz=10] run data get entity @s Item
           locate structure fotm:plains_den
           wait 30
-          locate structure fotm:forest_den
+          locate structure fotm:dark_forest_den
           wait 30
           locate structure fotm:tundra_den
           wait 30
@@ -122,7 +122,7 @@ jobs:
           echo "======== den results ========"
           grep -E 'Generated structure|Test passed|Test failed|entity data|nearest|Could not|Error|error' server/den.log | cut -c1-300
           FAIL=0
-          for d in forest plains tundra; do grep -q "Generated structure \"fotm:${d}_den\"" server/den.log || { echo "FAIL: $d den not placed"; FAIL=1; }; done
+          for d in dark_forest plains tundra; do grep -q "Generated structure \"fotm:${d}_den\"" server/den.log || { echo "FAIL: $d den not placed"; FAIL=1; }; done
           [ "$(grep -c 'Test passed, count: [3-9]' server/den.log)" -ge 3 ] || { echo "FAIL: DireWolf packs missing"; FAIL=1; }
           [ "$(grep -c 'nearest fotm:.*_den' server/den.log)" -ge 3 ] || echo "WARN: not every den found by /locate"
           [ "$(grep -c 'Test passed, count: [12]$' server/den.log)" -ge 3 ] || { echo "FAIL: roughed up blocks did not drop 1-2 items"; FAIL=1; }
