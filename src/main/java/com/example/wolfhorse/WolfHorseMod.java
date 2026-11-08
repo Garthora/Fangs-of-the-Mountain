@@ -30,7 +30,10 @@ import net.minecraftforge.event.BuildCreativeModeTabContentsEvent;
 import net.minecraftforge.event.entity.EntityAttributeCreationEvent;
 import net.minecraftforge.event.entity.SpawnPlacementRegisterEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
+import net.minecraftforge.common.crafting.CraftingHelper;
+import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
@@ -72,7 +75,7 @@ public class WolfHorseMod {
     public static final RegistryObject<Item> LARGE_BONE_SWORD = ITEMS.register("large_bone_sword",
             () -> new SwordItem(LargeBoneTier.INSTANCE, 3, -2.4F, new Item.Properties()));
     public static final RegistryObject<Item> DIREWOLF_BACKPACK = ITEMS.register("direwolf_backpack",
-            () -> new DireWolfBackpackItem(new Item.Properties().stacksTo(1).fireResistant()));
+            () -> new DireWolfBackpackItem(new Item.Properties().stacksTo(1)));
     public static final RegistryObject<Item> WOLF_WHISTLE =
             ITEMS.register("wolf_whistle", () -> new WolfWhistleItem(new Item.Properties().stacksTo(1)));
 
@@ -114,6 +117,11 @@ public class WolfHorseMod {
     public static final RegistryObject<Item> PELT_ARMOR_TRIM_SMITHING_TEMPLATE =
             ITEMS.register("pelt_armor_trim_smithing_template",
                     () -> SmithingTemplateItem.createArmorTrimTemplate(PELT_TRIM));
+    public static final ResourceKey<TrimPattern> FUR_TRIM =
+            ResourceKey.create(Registries.TRIM_PATTERN, new ResourceLocation(MODID, "fur"));
+    public static final RegistryObject<Item> FUR_ARMOR_TRIM_SMITHING_TEMPLATE =
+            ITEMS.register("fur_armor_trim_smithing_template",
+                    () -> SmithingTemplateItem.createArmorTrimTemplate(FUR_TRIM));
     public static final RegistryObject<Item> SCARF_ARMOR_TRIM_SMITHING_TEMPLATE =
             ITEMS.register("scarf_armor_trim_smithing_template",
                     () -> SmithingTemplateItem.createArmorTrimTemplate(SCARF_TRIM));
@@ -126,7 +134,7 @@ public class WolfHorseMod {
                 FOREST_FUR_HELMET, FOREST_FUR_CHESTPLATE, FOREST_FUR_LEGGINGS, FOREST_FUR_BOOTS, FOREST_PELT,
                 FUR_HELMET, FUR_CHESTPLATE, FUR_LEGGINGS, FUR_BOOTS, PELT,
                 TUNDRA_FUR_HELMET, TUNDRA_FUR_CHESTPLATE, TUNDRA_FUR_LEGGINGS, TUNDRA_FUR_BOOTS, TUNDRA_PELT,
-                PELT_ARMOR_TRIM_SMITHING_TEMPLATE, SCARF_ARMOR_TRIM_SMITHING_TEMPLATE,
+                FUR_ARMOR_TRIM_SMITHING_TEMPLATE, PELT_ARMOR_TRIM_SMITHING_TEMPLATE, SCARF_ARMOR_TRIM_SMITHING_TEMPLATE,
                 FOREST_DIREWOLF_SPAWN_EGG, PLAINS_DIREWOLF_SPAWN_EGG, TUNDRA_DIREWOLF_SPAWN_EGG);
     }
 
@@ -136,8 +144,25 @@ public class WolfHorseMod {
                     .title(Component.translatable("itemGroup.wolfhorse"))
                     .icon(() -> new ItemStack(WOLF_WHISTLE.get()))
                     .withTabsBefore(CreativeModeTabs.SPAWN_EGGS)
-                    .displayItems((params, out) -> tabItems().forEach(item -> out.accept(item.get())))
+                    .displayItems((params, out) -> tabItems().stream().filter(WolfHorseMod::shownInCreative)
+                            .forEach(item -> out.accept(item.get())))
                     .build());
+
+    private static final List<RegistryObject<Item>> FUR_ARMOR_PIECES = List.of(
+            FOREST_FUR_HELMET, FOREST_FUR_CHESTPLATE, FOREST_FUR_LEGGINGS, FOREST_FUR_BOOTS,
+            FUR_HELMET, FUR_CHESTPLATE, FUR_LEGGINGS, FUR_BOOTS,
+            TUNDRA_FUR_HELMET, TUNDRA_FUR_CHESTPLATE, TUNDRA_FUR_LEGGINGS, TUNDRA_FUR_BOOTS);
+
+    /** Fur armor sets are hidden in TRIM mode, the Fur Armor Trim template in SET mode. */
+    private static boolean shownInCreative(RegistryObject<Item> item) {
+        if (FUR_ARMOR_PIECES.contains(item)) {
+            return WolfHorseConfig.furArmorSetsEnabled();
+        }
+        if (item == FUR_ARMOR_TRIM_SMITHING_TEMPLATE) {
+            return WolfHorseConfig.furArmorTrimEnabled();
+        }
+        return true;
+    }
 
     private static RegistryObject<Item> armor(String id, FurArmorMaterial material, ArmorItem.Type type) {
         return ITEMS.register(id, () -> new ArmorItem(material, type, new Item.Properties()));
@@ -157,6 +182,9 @@ public class WolfHorseMod {
 
     public WolfHorseMod() {
         IEventBus modBus = FMLJavaModLoadingContext.get().getModEventBus();
+        ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, WolfHorseConfig.SPEC,
+                "fangs-of-the-mountains.toml");
+        CraftingHelper.register(FurArmorModeCondition.SERIALIZER);
         ENTITY_TYPES.register(modBus);
         ITEMS.register(modBus);
         TABS.register(modBus);
@@ -192,8 +220,9 @@ public class WolfHorseMod {
         if (tab == CreativeModeTabs.SPAWN_EGGS) {
             List.of(FOREST_DIREWOLF_SPAWN_EGG, PLAINS_DIREWOLF_SPAWN_EGG, TUNDRA_DIREWOLF_SPAWN_EGG).forEach(event::accept);
         } else if (tab == CreativeModeTabs.INGREDIENTS) {
-            List.of(FOREST_FUR, FUR, TUNDRA_FUR, DIREWOLF_BONE, FANG,
-                    PELT_ARMOR_TRIM_SMITHING_TEMPLATE, SCARF_ARMOR_TRIM_SMITHING_TEMPLATE).forEach(event::accept);
+            List.of(FOREST_FUR, FUR, TUNDRA_FUR, DIREWOLF_BONE, FANG, FUR_ARMOR_TRIM_SMITHING_TEMPLATE,
+                    PELT_ARMOR_TRIM_SMITHING_TEMPLATE, SCARF_ARMOR_TRIM_SMITHING_TEMPLATE)
+                    .stream().filter(WolfHorseMod::shownInCreative).forEach(event::accept);
         } else if (tab == CreativeModeTabs.TOOLS_AND_UTILITIES) {
             event.accept(WOLF_WHISTLE);
             event.accept(DIREWOLF_BACKPACK);
@@ -202,7 +231,7 @@ public class WolfHorseMod {
             List.of(FOREST_FUR_HELMET, FOREST_FUR_CHESTPLATE, FOREST_FUR_LEGGINGS, FOREST_FUR_BOOTS, FOREST_PELT,
                     FUR_HELMET, FUR_CHESTPLATE, FUR_LEGGINGS, FUR_BOOTS, PELT,
                     TUNDRA_FUR_HELMET, TUNDRA_FUR_CHESTPLATE, TUNDRA_FUR_LEGGINGS, TUNDRA_FUR_BOOTS, TUNDRA_PELT)
-                    .forEach(event::accept);
+                    .stream().filter(WolfHorseMod::shownInCreative).forEach(event::accept);
         }
     }
 }

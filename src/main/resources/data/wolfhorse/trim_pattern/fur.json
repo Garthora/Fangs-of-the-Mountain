@@ -1,0 +1,7 @@
+{
+  "asset_id": "wolfhorse:fur",
+  "description": {
+    "translate": "trim_pattern.wolfhorse.fur"
+  },
+  "template_item": "wolfhorse:fur_armor_trim_smithing_template"
+}

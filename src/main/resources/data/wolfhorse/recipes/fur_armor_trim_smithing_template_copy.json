@@ -1,0 +1,30 @@
+{
+  "conditions": [
+    {
+      "type": "wolfhorse:fur_armor",
+      "allows": "trim"
+    }
+  ],
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "DTD",
+    "DFD",
+    "DDD"
+  ],
+  "key": {
+    "D": {
+      "item": "minecraft:diamond"
+    },
+    "T": {
+      "item": "wolfhorse:fur_armor_trim_smithing_template"
+    },
+    "F": {
+      "tag": "wolfhorse:furs"
+    }
+  },
+  "result": {
+    "item": "wolfhorse:fur_armor_trim_smithing_template",
+    "count": 2
+  }
+}

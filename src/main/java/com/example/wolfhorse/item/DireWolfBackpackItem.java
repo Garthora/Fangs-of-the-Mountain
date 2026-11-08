@@ -1,5 +1,6 @@
 package com.example.wolfhorse.item;
 
+import com.example.wolfhorse.WolfHorseConfig;
 import com.example.wolfhorse.entity.WolfHorseEntity;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
@@ -128,6 +129,12 @@ public class DireWolfBackpackItem extends Item {
     }
 
     // ---------- keeping the DireWolf safe ----------
+
+    /** Fireproof unless the config says it can burn. */
+    @Override
+    public boolean isFireResistant() {
+        return !WolfHorseConfig.backpackCanBurn();
+    }
 
     /** A full backpack dropped on the ground never despawns. */
     @Override

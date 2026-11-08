@@ -6,7 +6,9 @@
         "wolfhorse:trims/models/armor/pelt",
         "wolfhorse:trims/models/armor/pelt_leggings",
         "wolfhorse:trims/models/armor/scarf",
-        "wolfhorse:trims/models/armor/scarf_leggings"
+        "wolfhorse:trims/models/armor/scarf_leggings",
+        "wolfhorse:trims/models/armor/fur",
+        "wolfhorse:trims/models/armor/fur_leggings"
       ],
       "palette_key": "trims/color_palettes/trim_palette",
       "permutations": {
@@ -64,7 +66,9 @@
         "wolfhorse:trims/models/armor/pelt",
         "wolfhorse:trims/models/armor/pelt_leggings",
         "wolfhorse:trims/models/armor/scarf",
-        "wolfhorse:trims/models/armor/scarf_leggings"
+        "wolfhorse:trims/models/armor/scarf_leggings",
+        "wolfhorse:trims/models/armor/fur",
+        "wolfhorse:trims/models/armor/fur_leggings"
       ],
       "palette_key": "trims/color_palettes/trim_palette",
       "permutations": {
