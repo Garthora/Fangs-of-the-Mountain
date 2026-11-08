@@ -54,6 +54,8 @@ jobs:
           send "locate structure wolfhorse:tundra_den" 40
           send "stop" 20
           exec 3>&-
+          echo "================ server log ================"
+          grep -vE 'ModLauncher|Loading|mixin|Mixin|FML|ForgeConfigSpec|net.minecraftforge' server.log | tail -120 || true
           echo "================ results ================"
           grep -E 'wolfhorse|Test passed|Test failed|nearest|Could not find|Generated structure|Error|Exception' server.log | grep -v 'Loading' | tail -60 || true
           FAIL=0
