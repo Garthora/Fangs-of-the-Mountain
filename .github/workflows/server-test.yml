@@ -35,7 +35,7 @@ jobs:
         run: |
           chmod +x run.sh
           mkfifo console
-          (tail -f console | ./run.sh nogui > server.log 2>&1) &
+          ./run.sh nogui < console > server.log 2>&1 &
           exec 3>console
           for i in $(seq 1 120); do grep -q 'Done (' server.log && break; sleep 5; done
           grep -q 'Done (' server.log || { tail -80 server.log; echo "Server did not start"; exit 1; }
@@ -52,8 +52,9 @@ jobs:
           send "locate structure wolfhorse:plains_den" 40
           send "locate structure wolfhorse:forest_den" 40
           send "locate structure wolfhorse:tundra_den" 40
-          send "stop" 20
+          send "stop" 25
           exec 3>&-
+          wait || true
           echo "================ server log ================"
           grep -vE 'ModLauncher|Loading|mixin|Mixin|FML|ForgeConfigSpec|net.minecraftforge' server.log | tail -120 || true
           echo "================ results ================"
