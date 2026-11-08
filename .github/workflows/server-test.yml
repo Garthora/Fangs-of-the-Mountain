@@ -1,0 +1,72 @@
+name: Server test
+
+# Starts a real Forge server with the mod, places each Den and checks the DireWolf pack
+# appears, and makes sure each Den can be found with /locate. Runs on the smoke-test branch only.
+on:
+  push:
+    branches: [ smoke-test ]
+  workflow_dispatch:
+
+jobs:
+  server-test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: gradle/actions/setup-gradle@v4
+      - name: Build the mod
+        run: chmod +x ./gradlew && ./gradlew build --no-daemon
+      - name: Install a Forge server
+        run: |
+          MC=$(grep '^minecraft_version=' gradle.properties | cut -d= -f2)
+          FORGE=$(grep '^forge_version=' gradle.properties | cut -d= -f2)
+          curl -sSfL -o installer.jar "https://maven.minecraftforge.net/net/minecraftforge/forge/${MC}-${FORGE}/forge-${MC}-${FORGE}-installer.jar"
+          mkdir server && cd server && java -jar ../installer.jar --installServer > install.log 2>&1 && tail -3 install.log
+          mkdir -p mods && cp ../build/libs/$(grep '^jar_name=' ../gradle.properties | cut -d= -f2)-*.jar mods/
+          ls mods
+          echo "eula=true" > eula.txt
+          printf "online-mode=false\nlevel-seed=12345\nspawn-protection=0\nmax-tick-time=-1\n" > server.properties
+      - name: Run the server and test the Dens
+        working-directory: server
+        run: |
+          chmod +x run.sh
+          mkfifo console
+          (tail -f console | ./run.sh nogui > server.log 2>&1) &
+          exec 3>console
+          for i in $(seq 1 120); do grep -q 'Done (' server.log && break; sleep 5; done
+          grep -q 'Done (' server.log || { tail -80 server.log; echo "Server did not start"; exit 1; }
+          send() { echo "$1" >&3; sleep "${2:-3}"; }
+          send "forceload add -48 -48 48 48" 10
+          send "place structure wolfhorse:forest_den 0 100 0" 8
+          send "place structure wolfhorse:plains_den 30 100 0" 8
+          send "place structure wolfhorse:tundra_den -30 100 0" 8
+          send "execute if entity @e[type=wolfhorse:forest_direwolf]" 3
+          send "execute if entity @e[type=wolfhorse:wolf_horse]" 3
+          send "execute if entity @e[type=wolfhorse:tundra_direwolf]" 3
+          send "execute if entity @e[type=wolfhorse:wolf_horse,nbt={Age:-24000}]" 3
+          send "data get entity @e[type=wolfhorse:forest_direwolf,limit=1] Attributes" 3
+          send "locate structure wolfhorse:plains_den" 40
+          send "locate structure wolfhorse:forest_den" 40
+          send "locate structure wolfhorse:tundra_den" 40
+          send "stop" 20
+          exec 3>&-
+          echo "================ results ================"
+          grep -E 'wolfhorse|Test passed|Test failed|nearest|Could not find|Generated structure|Error|Exception' server.log | grep -v 'Loading' | tail -60 || true
+          FAIL=0
+          grep -q 'Generated structure.*forest_den\|Generated structure "wolfhorse:forest_den"' server.log || { echo "FAIL: forest den not placed"; FAIL=1; }
+          grep -q 'Generated structure.*plains_den\|Generated structure "wolfhorse:plains_den"' server.log || { echo "FAIL: plains den not placed"; FAIL=1; }
+          grep -q 'Generated structure.*tundra_den\|Generated structure "wolfhorse:tundra_den"' server.log || { echo "FAIL: tundra den not placed"; FAIL=1; }
+          [ "$(grep -c 'Test passed' server.log)" -ge 4 ] || { echo "FAIL: DireWolf packs missing"; FAIL=1; }
+          [ "$(grep -c 'nearest wolfhorse:.*_den' server.log)" -ge 3 ] || echo "WARN: not every den found by /locate"
+          grep -iE 'exception|error' server.log | grep -i wolfhorse && FAIL=1
+          exit $FAIL
+      - name: Upload server log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: server-log
+          path: server/server.log

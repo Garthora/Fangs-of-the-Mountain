@@ -78,6 +78,8 @@ public class WolfHorseEntity extends Horse {
     private static final int GUARD_RADIUS = 12;
     @Nullable
     private BlockPos guardPos;
+    /** Set for DireWolves placed by a Den, so they get rolled stats and a coat like a natural spawn. */
+    private boolean needsDenRoll;
     /** true = Stay & Guard (fights mobs nearby), false = Go There (just waits at the spot). */
     private boolean guardAttacks = true;
 
@@ -282,6 +284,7 @@ public class WolfHorseEntity extends Horse {
     public void readAdditionalSaveData(CompoundTag tag) {
         super.readAdditionalSaveData(tag);
         this.clampStats(); // DireWolves from older versions are brought into the current ranges
+        this.needsDenRoll = tag.getBoolean("DenSpawn");
         this.setOrderedToSit(tag.getBoolean("Sitting"));
         if (tag.contains("GuardPos")) {
             BlockPos pos = NbtUtils.readBlockPos(tag.getCompound("GuardPos"));
@@ -493,9 +496,20 @@ public class WolfHorseEntity extends Horse {
 
     // ---------- Stats (see DireWolfStats for the ranges) ----------
 
+    @Override
+    public void tick() {
+        super.tick();
+        if (this.needsDenRoll && !this.level().isClientSide) {
+            this.needsDenRoll = false;
+            this.randomizeAttributes(this.random);
+            this.rollBreedCoat();
+        }
+    }
+
     /** Called by vanilla when a DireWolf spawns (naturally, from an egg or a command). */
     @Override
     protected void randomizeAttributes(RandomSource random) {
+        this.needsDenRoll = false;
         DireWolfBreed breed = this.getBreed();
         this.setStats(DireWolfStats.rollHealth(random, breed),
                 DireWolfStats.rollSpeedBlocks(random, breed),
