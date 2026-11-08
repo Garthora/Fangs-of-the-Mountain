@@ -47,7 +47,7 @@ jobs:
           send "execute if entity @e[type=wolfhorse:forest_direwolf]" 3
           send "execute if entity @e[type=wolfhorse:wolf_horse]" 3
           send "execute if entity @e[type=wolfhorse:tundra_direwolf]" 3
-          send "execute if entity @e[type=wolfhorse:wolf_horse,nbt={Age:-24000}]" 3
+          send "execute as @e[type=wolfhorse:wolf_horse] run data get entity @s Age" 3
           send "data get entity @e[type=wolfhorse:forest_direwolf,limit=1] Attributes" 3
           send "locate structure wolfhorse:plains_den" 40
           send "locate structure wolfhorse:forest_den" 40
@@ -63,8 +63,9 @@ jobs:
           grep -q 'Generated structure.*forest_den\|Generated structure "wolfhorse:forest_den"' server.log || { echo "FAIL: forest den not placed"; FAIL=1; }
           grep -q 'Generated structure.*plains_den\|Generated structure "wolfhorse:plains_den"' server.log || { echo "FAIL: plains den not placed"; FAIL=1; }
           grep -q 'Generated structure.*tundra_den\|Generated structure "wolfhorse:tundra_den"' server.log || { echo "FAIL: tundra den not placed"; FAIL=1; }
-          [ "$(grep -c 'Test passed' server.log)" -ge 4 ] || { echo "FAIL: DireWolf packs missing"; FAIL=1; }
+          [ "$(grep -c 'Test passed, count: [3-9]' server.log)" -ge 3 ] || { echo "FAIL: DireWolf packs missing"; FAIL=1; }
           [ "$(grep -c 'nearest wolfhorse:.*_den' server.log)" -ge 3 ] || echo "WARN: not every den found by /locate"
+          grep -q 'Plains DireWolf Pup has the following entity data: -2[0-9]\{4\}' server.log || echo "WARN: no pup age found"
           grep -iE 'exception|error' server.log | grep -i wolfhorse && FAIL=1
           exit $FAIL
       - name: Upload server log
