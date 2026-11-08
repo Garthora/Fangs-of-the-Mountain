@@ -8,6 +8,10 @@
     "minecraft:netherite_chestplate",
     "wolfhorse:fur_chestplate",
     "wolfhorse:forest_fur_chestplate",
-    "wolfhorse:tundra_fur_chestplate"
+    "wolfhorse:tundra_fur_chestplate",
+    {
+      "id": "#forge:armors/chestplates",
+      "required": false
+    }
   ]
 }

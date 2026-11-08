@@ -9,6 +9,10 @@
     "minecraft:turtle_helmet",
     "wolfhorse:fur_helmet",
     "wolfhorse:forest_fur_helmet",
-    "wolfhorse:tundra_fur_helmet"
+    "wolfhorse:tundra_fur_helmet",
+    {
+      "id": "#forge:armors/helmets",
+      "required": false
+    }
   ]
 }

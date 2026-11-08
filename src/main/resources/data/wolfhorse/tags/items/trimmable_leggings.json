@@ -8,6 +8,10 @@
     "minecraft:netherite_leggings",
     "wolfhorse:fur_leggings",
     "wolfhorse:forest_fur_leggings",
-    "wolfhorse:tundra_fur_leggings"
+    "wolfhorse:tundra_fur_leggings",
+    {
+      "id": "#forge:armors/leggings",
+      "required": false
+    }
   ]
 }

@@ -1,0 +1,8 @@
+{
+  "replace": false,
+  "values": [
+    "wolfhorse:fur_chestplate",
+    "wolfhorse:forest_fur_chestplate",
+    "wolfhorse:tundra_fur_chestplate"
+  ]
+}
