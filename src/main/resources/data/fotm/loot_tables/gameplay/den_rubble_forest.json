@@ -1,0 +1,84 @@
+{
+  "type": "minecraft:block",
+  "pools": [
+    {
+      "rolls": {
+        "type": "minecraft:uniform",
+        "min": 1,
+        "max": 2
+      },
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "fotm:forest_fur",
+          "weight": 10
+        },
+        {
+          "type": "minecraft:item",
+          "name": "fotm:direwolf_bone",
+          "weight": 8
+        },
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:bone",
+          "weight": 5
+        },
+        {
+          "type": "minecraft:item",
+          "name": "fotm:fang",
+          "weight": 5
+        },
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:beef",
+          "weight": 4
+        },
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:mutton",
+          "weight": 4
+        },
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:rabbit",
+          "weight": 3
+        },
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:rotten_flesh",
+          "weight": 3
+        },
+        {
+          "type": "minecraft:item",
+          "name": "fotm:pelt_armor_trim_smithing_template",
+          "weight": 1
+        },
+        {
+          "type": "minecraft:item",
+          "name": "fotm:scarf_armor_trim_smithing_template",
+          "weight": 1
+        },
+        {
+          "type": "minecraft:item",
+          "name": "fotm:fur_armor_trim_smithing_template",
+          "weight": 1
+        },
+        {
+          "type": "minecraft:item",
+          "name": "fotm:fur_wraps_armor_trim_smithing_template",
+          "weight": 1
+        },
+        {
+          "type": "minecraft:item",
+          "name": "fotm:forest_pelt",
+          "weight": 1
+        },
+        {
+          "type": "minecraft:item",
+          "name": "fotm:wolf_whistle",
+          "weight": 1
+        }
+      ]
+    }
+  ]
+}

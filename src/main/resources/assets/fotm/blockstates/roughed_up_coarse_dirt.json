@@ -1,0 +1,21 @@
+{
+  "variants": {
+    "": [
+      {
+        "model": "fotm:block/roughed_up_coarse_dirt"
+      },
+      {
+        "model": "fotm:block/roughed_up_coarse_dirt",
+        "y": 90
+      },
+      {
+        "model": "fotm:block/roughed_up_coarse_dirt",
+        "y": 180
+      },
+      {
+        "model": "fotm:block/roughed_up_coarse_dirt",
+        "y": 270
+      }
+    ]
+  }
+}

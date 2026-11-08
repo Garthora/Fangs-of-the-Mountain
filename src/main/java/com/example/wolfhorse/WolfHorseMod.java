@@ -23,7 +23,12 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraftforge.common.ForgeSpawnEggItem;
 import net.minecraftforge.event.BuildCreativeModeTabContentsEvent;
@@ -49,6 +54,28 @@ public class WolfHorseMod {
             DeferredRegister.create(ForgeRegistries.ENTITY_TYPES, MODID);
     public static final DeferredRegister<Item> ITEMS =
             DeferredRegister.create(ForgeRegistries.ITEMS, MODID);
+    public static final DeferredRegister<Block> BLOCKS =
+            DeferredRegister.create(ForgeRegistries.BLOCKS, MODID);
+
+    // ---------- "Roughed up" den floor blocks: break one for 1-2 items of den loot ----------
+    public static final RegistryObject<Block> ROUGHED_UP_PODZOL = roughedUp("roughed_up_podzol",
+            MapColor.PODZOL, 0.5F, SoundType.ROOTED_DIRT);
+    public static final RegistryObject<Block> ROUGHED_UP_COARSE_DIRT = roughedUp("roughed_up_coarse_dirt",
+            MapColor.DIRT, 0.5F, SoundType.GRAVEL);
+    public static final RegistryObject<Block> ROUGHED_UP_SNOW = roughedUp("roughed_up_snow",
+            MapColor.SNOW, 0.3F, SoundType.SNOW);
+    public static final RegistryObject<Item> ROUGHED_UP_PODZOL_ITEM = blockItem(ROUGHED_UP_PODZOL);
+    public static final RegistryObject<Item> ROUGHED_UP_COARSE_DIRT_ITEM = blockItem(ROUGHED_UP_COARSE_DIRT);
+    public static final RegistryObject<Item> ROUGHED_UP_SNOW_ITEM = blockItem(ROUGHED_UP_SNOW);
+
+    private static RegistryObject<Block> roughedUp(String id, MapColor color, float strength, SoundType sound) {
+        return BLOCKS.register(id, () -> new Block(BlockBehaviour.Properties.of()
+                .mapColor(color).strength(strength).sound(sound)));
+    }
+
+    private static RegistryObject<Item> blockItem(RegistryObject<Block> block) {
+        return ITEMS.register(block.getId().getPath(), () -> new BlockItem(block.get(), new Item.Properties()));
+    }
     public static final DeferredRegister<CreativeModeTab> TABS =
             DeferredRegister.create(Registries.CREATIVE_MODE_TAB, MODID);
 
@@ -140,6 +167,7 @@ public class WolfHorseMod {
                 FUR_HELMET, FUR_CHESTPLATE, FUR_LEGGINGS, FUR_BOOTS, PELT,
                 TUNDRA_FUR_HELMET, TUNDRA_FUR_CHESTPLATE, TUNDRA_FUR_LEGGINGS, TUNDRA_FUR_BOOTS, TUNDRA_PELT,
                 FUR_ARMOR_TRIM_SMITHING_TEMPLATE, FUR_WRAPS_ARMOR_TRIM_SMITHING_TEMPLATE, PELT_ARMOR_TRIM_SMITHING_TEMPLATE, SCARF_ARMOR_TRIM_SMITHING_TEMPLATE,
+                ROUGHED_UP_PODZOL_ITEM, ROUGHED_UP_COARSE_DIRT_ITEM, ROUGHED_UP_SNOW_ITEM,
                 FOREST_DIREWOLF_SPAWN_EGG, PLAINS_DIREWOLF_SPAWN_EGG, TUNDRA_DIREWOLF_SPAWN_EGG);
     }
 
@@ -191,6 +219,7 @@ public class WolfHorseMod {
                 "fangs-of-the-mountains.toml");
         CraftingHelper.register(FurArmorModeCondition.SERIALIZER);
         ENTITY_TYPES.register(modBus);
+        BLOCKS.register(modBus);
         ITEMS.register(modBus);
         TABS.register(modBus);
 
@@ -228,6 +257,8 @@ public class WolfHorseMod {
             List.of(FOREST_FUR, FUR, TUNDRA_FUR, DIREWOLF_BONE, FANG, FUR_ARMOR_TRIM_SMITHING_TEMPLATE, FUR_WRAPS_ARMOR_TRIM_SMITHING_TEMPLATE,
                     PELT_ARMOR_TRIM_SMITHING_TEMPLATE, SCARF_ARMOR_TRIM_SMITHING_TEMPLATE)
                     .stream().filter(WolfHorseMod::shownInCreative).forEach(event::accept);
+        } else if (tab == CreativeModeTabs.NATURAL_BLOCKS) {
+            List.of(ROUGHED_UP_PODZOL_ITEM, ROUGHED_UP_COARSE_DIRT_ITEM, ROUGHED_UP_SNOW_ITEM).forEach(event::accept);
         } else if (tab == CreativeModeTabs.TOOLS_AND_UTILITIES) {
             event.accept(WOLF_WHISTLE);
             event.accept(DIREWOLF_BACKPACK);

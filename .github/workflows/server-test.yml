@@ -98,6 +98,19 @@ jobs:
           execute if entity @e[type=fotm:plains_direwolf,x=18,y=-64,z=-12,dx=24,dy=400,dz=24]
           execute if entity @e[type=fotm:tundra_direwolf,x=-42,y=-64,z=-12,dx=24,dy=400,dz=24]
           execute as @e[type=fotm:plains_direwolf,x=18,y=-64,z=-12,dx=24,dy=400,dz=24] run data get entity @s Age
+          setblock 40 140 40 fotm:roughed_up_podzol
+          setblock -40 140 40 fotm:roughed_up_coarse_dirt
+          setblock 40 140 -40 fotm:roughed_up_snow
+          setblock 40 140 40 air destroy
+          setblock -40 140 40 air destroy
+          setblock 40 140 -40 air destroy
+          wait 2
+          execute if entity @e[type=item,x=35,y=-64,z=35,dx=10,dy=400,dz=10]
+          execute if entity @e[type=item,x=-45,y=-64,z=35,dx=10,dy=400,dz=10]
+          execute if entity @e[type=item,x=35,y=-64,z=-45,dx=10,dy=400,dz=10]
+          execute as @e[type=item,x=35,y=-64,z=35,dx=10,dy=400,dz=10] run data get entity @s Item
+          execute as @e[type=item,x=-45,y=-64,z=35,dx=10,dy=400,dz=10] run data get entity @s Item
+          execute as @e[type=item,x=35,y=-64,z=-45,dx=10,dy=400,dz=10] run data get entity @s Item
           locate structure fotm:plains_den
           wait 30
           locate structure fotm:forest_den
@@ -107,11 +120,12 @@ jobs:
           C
           ./serve.sh den.log ../den.cmds
           echo "======== den results ========"
-          grep -E 'Generated structure|Test passed|Test failed|entity data|nearest|Could not' server/den.log | cut -c1-300
+          grep -E 'Generated structure|Test passed|Test failed|entity data|nearest|Could not|Error|error' server/den.log | cut -c1-300
           FAIL=0
           for d in forest plains tundra; do grep -q "Generated structure \"fotm:${d}_den\"" server/den.log || { echo "FAIL: $d den not placed"; FAIL=1; }; done
           [ "$(grep -c 'Test passed, count: [3-9]' server/den.log)" -ge 3 ] || { echo "FAIL: DireWolf packs missing"; FAIL=1; }
           [ "$(grep -c 'nearest fotm:.*_den' server/den.log)" -ge 3 ] || echo "WARN: not every den found by /locate"
+          [ "$(grep -c 'Test passed, count: [12]$' server/den.log)" -ge 3 ] || { echo "FAIL: roughed up blocks did not drop 1-2 items"; FAIL=1; }
           grep -iE 'exception' server/den.log server/migrate.log | grep -iE 'fotm|wolfhorse' && FAIL=1
           exit $FAIL
       - name: Upload server logs

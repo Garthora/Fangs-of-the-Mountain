@@ -76,5 +76,8 @@
   "item.fotm.fur_armor_trim_smithing_template": "Smithing Template",
   "trim_pattern.fotm.fur": "Fur Armor Trim",
   "item.fotm.fur_wraps_armor_trim_smithing_template": "Smithing Template",
-  "trim_pattern.fotm.fur_wraps": "Fur Wrap Armor Trim"
+  "trim_pattern.fotm.fur_wraps": "Fur Wrap Armor Trim",
+  "block.fotm.roughed_up_podzol": "Roughed Up Podzol",
+  "block.fotm.roughed_up_coarse_dirt": "Roughed Up Coarse Dirt",
+  "block.fotm.roughed_up_snow": "Roughed Up Snow"
 }
