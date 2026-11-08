@@ -1,0 +1,29 @@
+{
+  "conditions": [
+    {
+      "type": "wolfhorse:fur_armor",
+      "allows": "trim"
+    }
+  ],
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "FSF",
+    "FLF",
+    "FSF"
+  ],
+  "key": {
+    "F": {
+      "tag": "wolfhorse:furs"
+    },
+    "S": {
+      "item": "minecraft:string"
+    },
+    "L": {
+      "item": "wolfhorse:direwolf_bone"
+    }
+  },
+  "result": {
+    "item": "wolfhorse:fur_wraps_armor_trim_smithing_template"
+  }
+}

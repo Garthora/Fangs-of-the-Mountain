@@ -122,6 +122,11 @@ public class WolfHorseMod {
     public static final RegistryObject<Item> FUR_ARMOR_TRIM_SMITHING_TEMPLATE =
             ITEMS.register("fur_armor_trim_smithing_template",
                     () -> SmithingTemplateItem.createArmorTrimTemplate(FUR_TRIM));
+    public static final ResourceKey<TrimPattern> FUR_WRAPS_TRIM =
+            ResourceKey.create(Registries.TRIM_PATTERN, new ResourceLocation(MODID, "fur_wraps"));
+    public static final RegistryObject<Item> FUR_WRAPS_ARMOR_TRIM_SMITHING_TEMPLATE =
+            ITEMS.register("fur_wraps_armor_trim_smithing_template",
+                    () -> SmithingTemplateItem.createArmorTrimTemplate(FUR_WRAPS_TRIM));
     public static final RegistryObject<Item> SCARF_ARMOR_TRIM_SMITHING_TEMPLATE =
             ITEMS.register("scarf_armor_trim_smithing_template",
                     () -> SmithingTemplateItem.createArmorTrimTemplate(SCARF_TRIM));
@@ -134,7 +139,7 @@ public class WolfHorseMod {
                 FOREST_FUR_HELMET, FOREST_FUR_CHESTPLATE, FOREST_FUR_LEGGINGS, FOREST_FUR_BOOTS, FOREST_PELT,
                 FUR_HELMET, FUR_CHESTPLATE, FUR_LEGGINGS, FUR_BOOTS, PELT,
                 TUNDRA_FUR_HELMET, TUNDRA_FUR_CHESTPLATE, TUNDRA_FUR_LEGGINGS, TUNDRA_FUR_BOOTS, TUNDRA_PELT,
-                FUR_ARMOR_TRIM_SMITHING_TEMPLATE, PELT_ARMOR_TRIM_SMITHING_TEMPLATE, SCARF_ARMOR_TRIM_SMITHING_TEMPLATE,
+                FUR_ARMOR_TRIM_SMITHING_TEMPLATE, FUR_WRAPS_ARMOR_TRIM_SMITHING_TEMPLATE, PELT_ARMOR_TRIM_SMITHING_TEMPLATE, SCARF_ARMOR_TRIM_SMITHING_TEMPLATE,
                 FOREST_DIREWOLF_SPAWN_EGG, PLAINS_DIREWOLF_SPAWN_EGG, TUNDRA_DIREWOLF_SPAWN_EGG);
     }
 
@@ -158,7 +163,7 @@ public class WolfHorseMod {
         if (FUR_ARMOR_PIECES.contains(item)) {
             return WolfHorseConfig.furArmorSetsEnabled();
         }
-        if (item == FUR_ARMOR_TRIM_SMITHING_TEMPLATE) {
+        if (item == FUR_ARMOR_TRIM_SMITHING_TEMPLATE || item == FUR_WRAPS_ARMOR_TRIM_SMITHING_TEMPLATE) {
             return WolfHorseConfig.furArmorTrimEnabled();
         }
         return true;
@@ -220,7 +225,7 @@ public class WolfHorseMod {
         if (tab == CreativeModeTabs.SPAWN_EGGS) {
             List.of(FOREST_DIREWOLF_SPAWN_EGG, PLAINS_DIREWOLF_SPAWN_EGG, TUNDRA_DIREWOLF_SPAWN_EGG).forEach(event::accept);
         } else if (tab == CreativeModeTabs.INGREDIENTS) {
-            List.of(FOREST_FUR, FUR, TUNDRA_FUR, DIREWOLF_BONE, FANG, FUR_ARMOR_TRIM_SMITHING_TEMPLATE,
+            List.of(FOREST_FUR, FUR, TUNDRA_FUR, DIREWOLF_BONE, FANG, FUR_ARMOR_TRIM_SMITHING_TEMPLATE, FUR_WRAPS_ARMOR_TRIM_SMITHING_TEMPLATE,
                     PELT_ARMOR_TRIM_SMITHING_TEMPLATE, SCARF_ARMOR_TRIM_SMITHING_TEMPLATE)
                     .stream().filter(WolfHorseMod::shownInCreative).forEach(event::accept);
         } else if (tab == CreativeModeTabs.TOOLS_AND_UTILITIES) {

@@ -74,5 +74,7 @@
   "message.wolfhorse.backpack.ridden": "%s is being ridden",
   "message.wolfhorse.backpack.no_room": "There isn't enough room to let your DireWolf out here",
   "item.wolfhorse.fur_armor_trim_smithing_template": "Smithing Template",
-  "trim_pattern.wolfhorse.fur": "Fur Armor Trim"
+  "trim_pattern.wolfhorse.fur": "Fur Armor Trim",
+  "item.wolfhorse.fur_wraps_armor_trim_smithing_template": "Smithing Template",
+  "trim_pattern.wolfhorse.fur_wraps": "Fur Wrap Armor Trim"
 }

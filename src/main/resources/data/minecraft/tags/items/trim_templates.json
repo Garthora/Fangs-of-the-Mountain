@@ -3,6 +3,7 @@
   "values": [
     "wolfhorse:pelt_armor_trim_smithing_template",
     "wolfhorse:scarf_armor_trim_smithing_template",
-    "wolfhorse:fur_armor_trim_smithing_template"
+    "wolfhorse:fur_armor_trim_smithing_template",
+    "wolfhorse:fur_wraps_armor_trim_smithing_template"
   ]
 }
