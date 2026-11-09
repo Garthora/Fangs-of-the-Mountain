@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "fotm:bloody_bone"
+    },
+    {
+      "item": "fotm:direwolf_bone"
+    }
+  ],
+  "result": {
+    "item": "fotm:blood_hunt_horn"
+  }
+}

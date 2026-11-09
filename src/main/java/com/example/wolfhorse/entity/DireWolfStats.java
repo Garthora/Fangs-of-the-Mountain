@@ -34,7 +34,7 @@ public final class DireWolfStats {
     }
 
     public static double jumpAverage(DireWolfBreed breed) {
-        return breed == DireWolfBreed.FOREST ? 4.75D : 4.0D;
+        return breed == DireWolfBreed.DARK_FOREST ? 4.75D : 4.0D;
     }
 
     /** A bell-shaped random value from min to max whose long-run average is the given average. */

@@ -13,10 +13,10 @@
   ],
   "key": {
     "F": {
-      "item": "fotm:forest_fur"
+      "item": "fotm:dark_forest_fur"
     }
   },
   "result": {
-    "item": "fotm:forest_fur_boots"
+    "item": "fotm:dark_forest_fur_boots"
   }
 }

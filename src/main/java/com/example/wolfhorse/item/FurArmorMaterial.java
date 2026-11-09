@@ -14,7 +14,7 @@ import java.util.function.Supplier;
 public enum FurArmorMaterial implements ArmorMaterial {
     // "fur" keeps the original texture/material name so Plains armor in existing worlds is unchanged.
     PLAINS("fur", () -> WolfHorseMod.FUR.get()),
-    FOREST("forest_fur", () -> WolfHorseMod.FOREST_FUR.get()),
+    DARK_FOREST("dark_forest_fur", () -> WolfHorseMod.DARK_FOREST_FUR.get()),
     TUNDRA("tundra_fur", () -> WolfHorseMod.TUNDRA_FUR.get());
 
     private static final int DURABILITY_MULTIPLIER = 15; // iron

@@ -6,7 +6,7 @@
       "entries": [
         {
           "type": "minecraft:item",
-          "name": "fotm:forest_fur",
+          "name": "fotm:dark_forest_fur",
           "weight": 1,
           "functions": [
             {
@@ -180,7 +180,7 @@
         },
         {
           "type": "minecraft:item",
-          "name": "fotm:forest_pelt",
+          "name": "fotm:dark_forest_pelt",
           "weight": 5
         },
         {

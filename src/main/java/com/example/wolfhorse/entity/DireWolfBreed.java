@@ -7,7 +7,7 @@ import net.minecraft.world.entity.animal.horse.Variant;
 /** Which coats each DireWolf type can be born with. */
 public enum DireWolfBreed {
     // brown to black
-    FOREST(new Variant[]{Variant.BROWN, Variant.DARK_BROWN, Variant.BLACK},
+    DARK_FOREST(new Variant[]{Variant.BROWN, Variant.DARK_BROWN, Variant.BLACK},
             new Markings[]{Markings.NONE, Markings.NONE, Markings.BLACK_DOTS}),
     // tan to dark grey
     PLAINS(new Variant[]{Variant.CREAMY, Variant.CREAMY, Variant.GRAY},

@@ -19,6 +19,8 @@ public final class WolfHorseConfig {
     public static final ForgeConfigSpec SPEC;
     private static final ForgeConfigSpec.BooleanValue BACKPACK_CAN_BURN;
     private static final ForgeConfigSpec.EnumValue<FurArmorMode> FUR_ARMOR_MODE;
+    private static final ForgeConfigSpec.BooleanValue FULL_MOON_HUNTS;
+    private static final ForgeConfigSpec.DoubleValue FULL_MOON_CHANCE;
 
     static {
         ForgeConfigSpec.Builder b = new ForgeConfigSpec.Builder();
@@ -41,6 +43,17 @@ public final class WolfHorseConfig {
                 .defineEnum("furArmorMode", FurArmorMode.SET);
         b.pop();
 
+        b.push("blood_hunts");
+        FULL_MOON_HUNTS = b
+                .comment("Can Blood Hunts start on their own on full-moon nights?",
+                        "(The Blood Hunt Horn and the /bloodhunt command work either way.)")
+                .define("fullMoonBloodHunts", true);
+        FULL_MOON_CHANCE = b
+                .comment("On each full-moon night, the chance (0.0 to 1.0) that a Blood Hunt comes for a player",
+                        "who is near a village or farm animals. 1.0 = every full moon.")
+                .defineInRange("fullMoonChance", 1.0D, 0.0D, 1.0D);
+        b.pop();
+
         SPEC = b.build();
     }
 
@@ -49,6 +62,14 @@ public final class WolfHorseConfig {
 
     public static boolean backpackCanBurn() {
         return SPEC.isLoaded() ? BACKPACK_CAN_BURN.get() : false;
+    }
+
+    public static boolean fullMoonBloodHunts() {
+        return SPEC.isLoaded() ? FULL_MOON_HUNTS.get() : true;
+    }
+
+    public static double fullMoonBloodHuntChance() {
+        return SPEC.isLoaded() ? FULL_MOON_CHANCE.get() : 1.0D;
     }
 
     public static FurArmorMode furArmorMode() {

@@ -1,6 +1,6 @@
 {
   "parent": "minecraft:item/generated",
   "textures": {
-    "layer0": "fotm:item/forest_fur_boots"
+    "layer0": "fotm:item/dense_bone"
   }
 }

@@ -8,13 +8,13 @@
   ],
   "key": {
     "F": {
-      "item": "fotm:forest_fur"
+      "item": "fotm:dark_forest_fur"
     },
     "S": {
       "item": "minecraft:string"
     }
   },
   "result": {
-    "item": "fotm:forest_pelt"
+    "item": "fotm:dark_forest_pelt"
   }
 }

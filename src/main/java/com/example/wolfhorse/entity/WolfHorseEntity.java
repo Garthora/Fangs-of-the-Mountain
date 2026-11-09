@@ -47,6 +47,12 @@ import net.minecraft.world.level.Level;
 
 import javax.annotation.Nullable;
 import java.util.UUID;
+import com.example.wolfhorse.blood.BloodHuntManager;
+import com.example.wolfhorse.blood.BloodHuntType;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.world.entity.decoration.ArmorStand;
+import net.minecraft.world.entity.npc.AbstractVillager;
+
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
 import net.minecraft.nbt.NbtUtils;
@@ -80,6 +86,13 @@ public class WolfHorseEntity extends Horse {
     private BlockPos guardPos;
     /** Set for DireWolves placed by a Den, so they get rolled stats and a coat like a natural spawn. */
     private boolean needsDenRoll;
+    /** Set while this DireWolf is part of a Blood Hunt pack. */
+    @Nullable
+    private UUID bloodHuntId;
+    @Nullable
+    private BloodHuntType bloodHuntType;
+    @Nullable
+    private UUID bloodHuntPrey;
     /** true = Stay & Guard (fights mobs nearby), false = Go There (just waits at the spot). */
     private boolean guardAttacks = true;
 
@@ -113,6 +126,7 @@ public class WolfHorseEntity extends Horse {
         this.goalSelector.addGoal(4, new WolfHorseMeleeAttackGoal(this, 2.0D, true, true));  // tamed: 2x
         this.goalSelector.addGoal(4, new WolfHorseMeleeAttackGoal(this, 1.4D, true, false)); // wild
         this.goalSelector.addGoal(4, new WolfHorseEatGroundMeatGoal(this)); // eats meat lying nearby
+        this.goalSelector.addGoal(5, new BloodHuntMoveGoal(this));          // Blood Hunt: head for the village
         this.goalSelector.addGoal(5, new WolfHorseFollowOwnerGoal(this, 1.2D, 10.0F, 3.0F));
         this.goalSelector.addGoal(5, new MoveTowardsRestrictionGoal(this, 1.0D)); // back to its guard spot
         this.goalSelector.addGoal(6, new BreedGoal(this, 1.0D, WolfHorseEntity.class));
@@ -128,6 +142,9 @@ public class WolfHorseEntity extends Horse {
         this.targetSelector.addGoal(4, new NearestAttackableTargetGoal<>(this, Monster.class, 5, true, false,
                 e -> this.guardPos != null && this.guardAttacks && !(e instanceof Creeper)
                         && e.blockPosition().closerThan(this.guardPos, GUARD_RADIUS)));
+        // Blood Hunt packs: Tundra attack everything, Plains go for livestock, Dark Forest for villagers
+        this.targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(this, LivingEntity.class, 5, false, false,
+                this::isHuntPrey));
         this.targetSelector.addGoal(5, new NearestAttackableTargetGoal<>(this, Sheep.class, 10, true, false,
                 e -> !this.isTamed()));
         this.targetSelector.addGoal(5, new NearestAttackableTargetGoal<>(this, Rabbit.class, 10, true, false,
@@ -241,6 +258,87 @@ public class WolfHorseEntity extends Horse {
         return super.hurt(source, amount);
     }
 
+    // ---------- Blood Hunts ----------
+
+    public boolean isBloodHunter() {
+        return this.bloodHuntId != null;
+    }
+
+    @Nullable
+    public UUID getBloodHuntId() {
+        return this.bloodHuntId;
+    }
+
+    @Nullable
+    public BloodHuntType getBloodHuntType() {
+        return this.bloodHuntType;
+    }
+
+    public void makeBloodHunter(UUID huntId, BloodHuntType type, @Nullable UUID prey) {
+        this.bloodHuntId = huntId;
+        this.bloodHuntType = type;
+        this.bloodHuntPrey = prey;
+        this.addTag("fotm_blood_hunter");
+        this.setPersistenceRequired();
+        this.getAttribute(Attributes.FOLLOW_RANGE).setBaseValue(48.0D);
+    }
+
+    /** What a Blood Hunt pack goes after, depending on its type. */
+    private boolean isHuntPrey(LivingEntity e) {
+        if (this.bloodHuntId == null || this.bloodHuntType == null || !e.isAlive()) {
+            return false;
+        }
+        if (e instanceof WolfHorseEntity other && other.isBloodHunter()) {
+            return false;
+        }
+        if (!BloodHuntManager.nearCenter(this.bloodHuntId, e.position(), 64.0D)) {
+            return false;
+        }
+        if (e instanceof Player player) {
+            if (player.isCreative() || player.isSpectator()) {
+                return false;
+            }
+            return this.bloodHuntType == BloodHuntType.TUNDRA || player.getUUID().equals(this.bloodHuntPrey);
+        }
+        return switch (this.bloodHuntType) {
+            case TUNDRA -> !(e instanceof ArmorStand) && !(e instanceof Creeper);
+            case PLAINS -> e.getType().is(BloodHuntManager.LIVESTOCK);
+            case DARK_FOREST -> e instanceof AbstractVillager;
+        };
+    }
+
+    /** Hunters with nothing to attack make their way to the middle of the hunt. */
+    static class BloodHuntMoveGoal extends net.minecraft.world.entity.ai.goal.Goal {
+        private final WolfHorseEntity wolf;
+
+        BloodHuntMoveGoal(WolfHorseEntity wolf) {
+            this.wolf = wolf;
+            this.setFlags(java.util.EnumSet.of(Flag.MOVE));
+        }
+
+        @Override
+        public boolean canUse() {
+            if (!this.wolf.isBloodHunter() || this.wolf.getTarget() != null) {
+                return false;
+            }
+            BlockPos c = BloodHuntManager.center(this.wolf.getBloodHuntId());
+            return c != null && c.distToCenterSqr(this.wolf.position()) > 64.0D;
+        }
+
+        @Override
+        public boolean canContinueToUse() {
+            return this.canUse() && !this.wolf.getNavigation().isDone();
+        }
+
+        @Override
+        public void start() {
+            BlockPos c = BloodHuntManager.center(this.wolf.getBloodHuntId());
+            if (c != null) {
+                this.wolf.getNavigation().moveTo(c.getX() + 0.5D, c.getY(), c.getZ() + 0.5D, 1.3D);
+            }
+        }
+    }
+
     // ---------- Owner helpers ----------
 
     @Nullable
@@ -274,6 +372,13 @@ public class WolfHorseEntity extends Horse {
     public void addAdditionalSaveData(CompoundTag tag) {
         super.addAdditionalSaveData(tag);
         tag.putBoolean("Sitting", this.isOrderedToSit());
+        if (this.bloodHuntId != null && this.bloodHuntType != null) {
+            tag.putUUID("BloodHunt", this.bloodHuntId);
+            tag.putString("BloodHuntType", this.bloodHuntType.id);
+            if (this.bloodHuntPrey != null) {
+                tag.putUUID("BloodHuntPrey", this.bloodHuntPrey);
+            }
+        }
         if (this.guardPos != null) {
             tag.put("GuardPos", NbtUtils.writeBlockPos(this.guardPos));
             tag.putBoolean("GuardAttacks", this.guardAttacks);
@@ -285,6 +390,11 @@ public class WolfHorseEntity extends Horse {
         super.readAdditionalSaveData(tag);
         this.clampStats(); // DireWolves from older versions are brought into the current ranges
         this.needsDenRoll = tag.getBoolean("DenSpawn");
+        if (tag.hasUUID("BloodHunt")) {
+            this.bloodHuntId = tag.getUUID("BloodHunt");
+            this.bloodHuntType = BloodHuntType.byId(tag.getString("BloodHuntType"));
+            this.bloodHuntPrey = tag.hasUUID("BloodHuntPrey") ? tag.getUUID("BloodHuntPrey") : null;
+        }
         this.setOrderedToSit(tag.getBoolean("Sitting"));
         if (tag.contains("GuardPos")) {
             BlockPos pos = NbtUtils.readBlockPos(tag.getCompound("GuardPos"));
@@ -302,6 +412,9 @@ public class WolfHorseEntity extends Horse {
 
     @Override
     public InteractionResult mobInteract(Player player, InteractionHand hand) {
+        if (this.isBloodHunter()) {
+            return InteractionResult.PASS; // a Blood Hunt pack can't be tamed, ridden or fed
+        }
         ItemStack stack = player.getItemInHand(hand);
         boolean client = this.level().isClientSide;
 
@@ -499,6 +612,14 @@ public class WolfHorseEntity extends Horse {
     @Override
     public void tick() {
         super.tick();
+        // a hunter whose hunt is over (or was lost when the server stopped) slinks away
+        if (this.bloodHuntId != null && !this.level().isClientSide && this.tickCount % 100 == 0
+                && !BloodHuntManager.isActive(this.bloodHuntId)) {
+            ((ServerLevel) this.level()).sendParticles(ParticleTypes.POOF, this.getX(), this.getY() + 0.8D, this.getZ(),
+                    12, 0.4D, 0.4D, 0.4D, 0.02D);
+            this.discard();
+            return;
+        }
         if (this.needsDenRoll && !this.level().isClientSide) {
             this.needsDenRoll = false;
             this.randomizeAttributes(this.random);
@@ -562,7 +683,7 @@ public class WolfHorseEntity extends Horse {
     // ---------- Breeds (Forest / Plains / Tundra) ----------
 
     public DireWolfBreed getBreed() {
-        if (this.getType() == WolfHorseMod.FOREST_DIREWOLF.get()) return DireWolfBreed.FOREST;
+        if (this.getType() == WolfHorseMod.DARK_FOREST_DIREWOLF.get()) return DireWolfBreed.DARK_FOREST;
         if (this.getType() == WolfHorseMod.TUNDRA_DIREWOLF.get()) return DireWolfBreed.TUNDRA;
         return DireWolfBreed.PLAINS;
     }

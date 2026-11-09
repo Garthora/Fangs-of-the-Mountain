@@ -1,0 +1,9 @@
+{
+  "asset_name": "fotm_dark_forest_fur",
+  "description": {
+    "color": "#6B4A2F",
+    "translate": "trim_material.fotm.dark_forest_fur"
+  },
+  "ingredient": "fotm:dark_forest_fur",
+  "item_model_index": 0.02
+}

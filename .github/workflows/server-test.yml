@@ -33,6 +33,7 @@ jobs:
           echo "eula=true" > eula.txt
           printf "online-mode=false\nlevel-seed=12345\nspawn-protection=0\nmax-tick-time=-1\n" > server.properties
           curl -sSfL -o ../old.jar "https://github.com/${{ github.repository }}/releases/download/v1.21.0/fangs-of-the-mountains-1.21.0.jar"
+          curl -sSfL -o ../mid.jar "https://github.com/${{ github.repository }}/releases/download/v1.23.1/fangs-of-the-mountains-1.23.1.jar"
           cat > ../serve.sh <<'SH'
           # usage: serve.sh <log> <commands file>   (one command per line, "wait N" pauses)
           cd server; rm -f console; mkfifo console
@@ -63,23 +64,38 @@ jobs:
           C
           ./serve.sh old.log ../old.cmds
           grep -E 'Test passed|Test failed|has the following block data|Unknown|Error' server/old.log | cut -c1-400
+      - name: "1b. Open it with 1.23.1 and add Forest things"
+        run: |
+          rm server/mods/*.jar && cp mid.jar server/mods/
+          cat > mid.cmds <<'C'
+          wait 5
+          execute if entity @e[type=fotm:forest_direwolf,name=Ash]
+          setblock 8 100 8 stone
+          summon fotm:forest_direwolf 8 101 8 {CustomName:'"Bramble"',PersistenceRequired:1b}
+          setblock 0 100 3 chest{Items:[{Slot:0b,id:"fotm:forest_fur",Count:3b},{Slot:1b,id:"fotm:forest_fur_helmet",Count:1b},{Slot:2b,id:"minecraft:iron_chestplate",Count:1b,tag:{Trim:{pattern:"fotm:scarf",material:"fotm:forest_fur"}}}]}
+          wait 5
+          C
+          ./serve.sh mid.log ../mid.cmds
+          grep -E 'Test passed|Test failed' server/mid.log
       - name: "2. Load that world with this build"
         run: |
           rm server/mods/*.jar
           cp build/libs/$(grep '^jar_name=' gradle.properties | cut -d= -f2)-*.jar server/mods/
           cat > new.cmds <<'C'
           wait 5
-          execute if entity @e[type=fotm:forest_direwolf,name=Ash]
+          execute if entity @e[type=fotm:dark_forest_direwolf,name=Ash]
+          execute if entity @e[type=fotm:dark_forest_direwolf,name=Bramble]
           execute if entity @e[type=fotm:plains_direwolf]
           data get block 0 100 0 Items
+          data get block 0 100 3 Items
           C
           ./serve.sh migrate.log ../new.cmds
           echo "======== migration results ========"
           grep -E 'Test passed|Test failed|has the following block data|wolfhorse|missing|Missing|remap' server/migrate.log | cut -c1-900
           FAIL=0
-          [ "$(grep -c 'Test passed' server/migrate.log)" -ge 2 ] || { echo "FAIL: old DireWolves did not carry over"; FAIL=1; }
+          [ "$(grep -c 'Test passed' server/migrate.log)" -ge 3 ] || { echo "FAIL: old DireWolves did not carry over"; FAIL=1; }
           ITEMS=$(grep 'has the following block data' server/migrate.log)
-          for want in 'fotm:fur' 'fotm:plains_direwolf_spawn_egg' 'wolfhorse:pelt' 'fotm:direwolf_backpack' 'Frost'; do
+          for want in 'fotm:fur' 'fotm:plains_direwolf_spawn_egg' 'wolfhorse:pelt' 'fotm:direwolf_backpack' 'Frost' 'fotm:dark_forest_fur"' 'fotm:dark_forest_fur_helmet' 'fotm:scarf'; do
             echo "$ITEMS" | grep -q "$want" || { echo "FAIL: chest is missing $want"; FAIL=1; }
           done
           exit $FAIL
@@ -94,7 +110,7 @@ jobs:
           wait 5
           place structure fotm:tundra_den -30 120 0
           wait 5
-          execute if entity @e[type=fotm:forest_direwolf,x=-12,y=-64,z=-12,dx=24,dy=400,dz=24]
+          execute if entity @e[type=fotm:dark_forest_direwolf,x=-12,y=-64,z=-12,dx=24,dy=400,dz=24]
           execute if entity @e[type=fotm:plains_direwolf,x=18,y=-64,z=-12,dx=24,dy=400,dz=24]
           execute if entity @e[type=fotm:tundra_direwolf,x=-42,y=-64,z=-12,dx=24,dy=400,dz=24]
           execute as @e[type=fotm:plains_direwolf,x=18,y=-64,z=-12,dx=24,dy=400,dz=24] run data get entity @s Age
@@ -127,6 +143,45 @@ jobs:
           [ "$(grep -c 'nearest fotm:.*_den' server/den.log)" -ge 3 ] || echo "WARN: not every den found by /locate"
           [ "$(grep -c 'Test passed, count: [12]$' server/den.log)" -ge 3 ] || { echo "FAIL: roughed up blocks did not drop 1-2 items"; FAIL=1; }
           grep -iE 'exception' server/den.log server/migrate.log | grep -iE 'fotm|wolfhorse' && FAIL=1
+          exit $FAIL
+      - name: "4. Blood Hunts"
+        run: |
+          at() { echo "execute positioned $1 0 $2 positioned over motion_blocking_no_leaves run summon $3 ~ ~ ~ {PersistenceRequired:1b}"; }
+          box() { echo "@e[type=$1,x=$(( $2 - 40 )),y=-64,z=-40,dx=80,dy=400,dz=80]"; }
+          {
+            echo "time set 1000"
+            echo "gamerule doDaylightCycle false"
+            echo "forceload add 140 -60 260 60"
+            echo "wait 10"
+            for t in tundra plains dark_forest; do
+              X=200
+              for i in 1 2 3; do at $X 0 minecraft:villager; done
+              for i in 1 2 3; do at $((X+3)) 2 minecraft:cow; done
+              echo "wait 2"
+              echo "execute if entity $(box minecraft:villager $X)"
+              echo "execute if entity $(box minecraft:cow $X)"
+              echo "bloodhunt start $t $X 64 0"
+              echo "wait 12"
+              echo "execute if entity @e[tag=fotm_blood_hunter]"
+              echo "wait 50"
+              echo "say RESULT $t"
+              echo "execute if entity $(box minecraft:villager $X)"
+              echo "execute if entity $(box minecraft:cow $X)"
+              echo "bloodhunt stop"
+              echo "wait 8"
+              echo "kill @e[type=minecraft:villager]"
+              echo "kill @e[type=minecraft:cow]"
+              echo "kill @e[type=minecraft:item]"
+              echo "wait 3"
+            done
+          } > hunt.cmds
+          cat hunt.cmds | head -20
+          ./serve.sh hunt.log ../hunt.cmds
+          echo "======== blood hunt results ========"
+          grep -E 'Started a Blood Hunt|Stopped|Test passed|Test failed|RESULT|Unknown|Exception|exception' server/hunt.log | cut -c1-200
+          FAIL=0
+          [ "$(grep -c 'Started a Blood Hunt' server/hunt.log)" -ge 3 ] || { echo "FAIL: hunts did not start"; FAIL=1; }
+          grep -iE 'exception' server/hunt.log | grep -iE 'fotm|wolfhorse|blood' && FAIL=1
           exit $FAIL
       - name: Upload server logs
         if: always()

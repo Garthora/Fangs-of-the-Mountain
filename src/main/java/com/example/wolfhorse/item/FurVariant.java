@@ -7,7 +7,7 @@ import net.minecraft.world.item.armortrim.ArmorTrim;
 /** The three fur colours, one per DireWolf type. Also used as armor-trim materials. */
 public enum FurVariant {
     PLAINS("plains"),  // tan to dark grey
-    FOREST("forest"),  // brown to black
+    DARK_FOREST("dark_forest"),  // brown to black
     TUNDRA("tundra");  // white to grey
 
     public final String id;
@@ -23,7 +23,11 @@ public enum FurVariant {
     public static FurVariant fromTrim(ArmorTrim trim) {
         return trim.material().unwrapKey().map(key -> {
             for (FurVariant v : values()) {
-                if (isOurs(key.location()) && v.trimMaterial.getPath().equals(key.location().getPath())) {
+                String path = key.location().getPath();
+                if (path.equals("forest_fur")) {
+                    path = "dark_forest_fur"; // trims made before the Dark Forest rename
+                }
+                if (isOurs(key.location()) && v.trimMaterial.getPath().equals(path)) {
                     return v;
                 }
             }

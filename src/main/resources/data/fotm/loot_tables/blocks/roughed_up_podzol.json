@@ -28,7 +28,7 @@
             },
             {
               "type": "minecraft:loot_table",
-              "name": "fotm:gameplay/den_rubble_forest"
+              "name": "fotm:gameplay/den_rubble_dark_forest"
             }
           ]
         }

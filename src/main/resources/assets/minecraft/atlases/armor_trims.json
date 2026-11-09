@@ -77,7 +77,7 @@
       "palette_key": "trims/color_palettes/trim_palette",
       "permutations": {
         "fotm_plains_fur": "fotm:trims/color_palettes/plains_fur",
-        "fotm_forest_fur": "fotm:trims/color_palettes/forest_fur",
+        "fotm_dark_forest_fur": "fotm:trims/color_palettes/dark_forest_fur",
         "fotm_tundra_fur": "fotm:trims/color_palettes/tundra_fur"
       }
     }

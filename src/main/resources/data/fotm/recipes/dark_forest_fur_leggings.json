@@ -8,16 +8,16 @@
   "type": "minecraft:crafting_shaped",
   "category": "equipment",
   "pattern": [
-    "F F",
     "FFF",
-    "FFF"
+    "F F",
+    "F F"
   ],
   "key": {
     "F": {
-      "item": "fotm:forest_fur"
+      "item": "fotm:dark_forest_fur"
     }
   },
   "result": {
-    "item": "fotm:forest_fur_chestplate"
+    "item": "fotm:dark_forest_fur_leggings"
   }
 }
