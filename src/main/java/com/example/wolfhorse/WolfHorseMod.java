@@ -6,6 +6,7 @@ import com.example.wolfhorse.item.DireWolfBackpackItem;
 import com.example.wolfhorse.item.FurVariant;
 import com.example.wolfhorse.item.HornItem;
 import net.minecraft.world.item.Rarity;
+import net.minecraft.sounds.SoundEvent;
 import com.example.wolfhorse.item.LargeBoneTier;
 import net.minecraft.world.item.SwordItem;
 import com.example.wolfhorse.item.PeltItem;
@@ -58,6 +59,11 @@ public class WolfHorseMod {
             DeferredRegister.create(ForgeRegistries.ITEMS, MODID);
     public static final DeferredRegister<Block> BLOCKS =
             DeferredRegister.create(ForgeRegistries.BLOCKS, MODID);
+    public static final DeferredRegister<SoundEvent> SOUNDS =
+            DeferredRegister.create(ForgeRegistries.SOUND_EVENTS, MODID);
+    /** One DireWolf howl (eight variations, see assets/fotm/sounds.json). */
+    public static final RegistryObject<SoundEvent> DIREWOLF_HOWL = SOUNDS.register("direwolf_howl",
+            () -> SoundEvent.createVariableRangeEvent(new ResourceLocation(MODID, "direwolf_howl")));
 
     // ---------- "Roughed up" den floor blocks: break one for 1-2 items of den loot ----------
     public static final RegistryObject<Block> ROUGHED_UP_PODZOL = roughedUp("roughed_up_podzol",
@@ -231,6 +237,7 @@ public class WolfHorseMod {
         CraftingHelper.register(FurArmorModeCondition.SERIALIZER);
         ENTITY_TYPES.register(modBus);
         BLOCKS.register(modBus);
+        SOUNDS.register(modBus);
         ITEMS.register(modBus);
         TABS.register(modBus);
 

@@ -17,6 +17,7 @@ public class DireWolfRenderer extends MobRenderer<WolfHorseEntity, DireWolfModel
     public DireWolfRenderer(EntityRendererProvider.Context context) {
         super(context, new DireWolfModel(context.bakeLayer(ModelLayers.WOLF)), 1.0F);
         this.addLayer(new DireWolfSaddleLayer(this, context.getModelSet()));
+        this.addLayer(new BloodEyesLayer(this));
     }
 
     @Override

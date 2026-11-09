@@ -99,5 +99,6 @@
   "commands.fotm.bloodhunt.started": "Started a Blood Hunt (%s) at %s, %s, %s",
   "commands.fotm.bloodhunt.stopped": "Stopped %s Blood Hunt(s)",
   "commands.fotm.bloodhunt.unknown": "Unknown Blood Hunt type: %s (use tundra, plains or dark_forest)",
-  "entity.fotm.frenzied_direwolf": "Frenzied DireWolf"
+  "entity.fotm.frenzied_direwolf": "Frenzied DireWolf",
+  "subtitles.fotm.direwolf_howl": "DireWolf howls"
 }

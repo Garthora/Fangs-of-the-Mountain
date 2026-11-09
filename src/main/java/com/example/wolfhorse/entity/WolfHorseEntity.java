@@ -97,6 +97,9 @@ public class WolfHorseEntity extends Horse {
     /** true = Stay & Guard (fights mobs nearby), false = Go There (just waits at the spot). */
     private boolean guardAttacks = true;
 
+    /** Synced so the client can draw the red eyes. */
+    private static final EntityDataAccessor<Boolean> DATA_BLOOD_HUNTER =
+            SynchedEntityData.defineId(WolfHorseEntity.class, EntityDataSerializers.BOOLEAN);
     private static final EntityDataAccessor<Boolean> DATA_SITTING =
             SynchedEntityData.defineId(WolfHorseEntity.class, EntityDataSerializers.BOOLEAN);
 
@@ -255,6 +258,10 @@ public class WolfHorseEntity extends Horse {
         }
         if (!this.level().isClientSide) {
             this.setOrderedToSit(false); // wolves stand up when hit
+            // strike one of a Blood Hunt pack and the whole pack comes for you
+            if (this.bloodHuntId != null && source.getEntity() instanceof Player attacker && !attacker.isCreative()) {
+                BloodHuntManager.angerPack(this.bloodHuntId, attacker.getUUID());
+            }
         }
         return super.hurt(source, amount);
     }
@@ -263,6 +270,11 @@ public class WolfHorseEntity extends Horse {
 
     public boolean isBloodHunter() {
         return this.bloodHuntId != null;
+    }
+
+    /** Works on the client too: used to draw the red eyes. */
+    public boolean hasBloodEyes() {
+        return this.entityData.get(DATA_BLOOD_HUNTER);
     }
 
     @Nullable
@@ -279,6 +291,7 @@ public class WolfHorseEntity extends Horse {
         this.bloodHuntId = huntId;
         this.bloodHuntType = type;
         this.bloodHuntPrey = prey;
+        this.entityData.set(DATA_BLOOD_HUNTER, true);
         this.addTag("fotm_blood_hunter");
         this.setPersistenceRequired();
         this.getAttribute(Attributes.FOLLOW_RANGE).setBaseValue(48.0D);
@@ -299,7 +312,11 @@ public class WolfHorseEntity extends Horse {
             if (player.isCreative() || player.isSpectator()) {
                 return false;
             }
-            return this.bloodHuntType == BloodHuntType.TUNDRA || player.getUUID().equals(this.bloodHuntPrey);
+            // Tundra and Dark Forest packs treat players like any villager; Plains packs only
+            // go for players who struck the pack (or blew the Blood Hunt Horn)
+            return this.bloodHuntType != BloodHuntType.PLAINS
+                    || player.getUUID().equals(this.bloodHuntPrey)
+                    || BloodHuntManager.isEnemy(this.bloodHuntId, player.getUUID());
         }
         return switch (this.bloodHuntType) {
             // "everything in the village": villagers, iron golems, livestock, pets (and players, above)
@@ -365,6 +382,7 @@ public class WolfHorseEntity extends Horse {
     protected void defineSynchedData() {
         super.defineSynchedData();
         this.entityData.define(DATA_SITTING, false);
+        this.entityData.define(DATA_BLOOD_HUNTER, false);
     }
 
     public boolean isOrderedToSit() {
@@ -401,6 +419,7 @@ public class WolfHorseEntity extends Horse {
             this.bloodHuntId = tag.getUUID("BloodHunt");
             this.bloodHuntType = BloodHuntType.byId(tag.getString("BloodHuntType"));
             this.bloodHuntPrey = tag.hasUUID("BloodHuntPrey") ? tag.getUUID("BloodHuntPrey") : null;
+            this.entityData.set(DATA_BLOOD_HUNTER, true);
         }
         this.setOrderedToSit(tag.getBoolean("Sitting"));
         if (tag.contains("GuardPos")) {

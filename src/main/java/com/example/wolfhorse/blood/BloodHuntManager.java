@@ -73,6 +73,19 @@ public final class BloodHuntManager {
         return h == null ? null : h.center;
     }
 
+    /** A player hit one of this hunt's wolves: the whole pack goes after them. */
+    public static void angerPack(UUID huntId, UUID player) {
+        BloodHunt h = HUNTS.get(huntId);
+        if (h != null) {
+            h.addEnemy(player);
+        }
+    }
+
+    public static boolean isEnemy(UUID huntId, UUID player) {
+        BloodHunt h = HUNTS.get(huntId);
+        return h != null && h.isEnemy(player);
+    }
+
     public static boolean huntNear(Level level, BlockPos pos) {
         for (BloodHunt h : HUNTS.values()) {
             if (!h.isOver() && h.level == level
@@ -173,17 +186,6 @@ public final class BloodHuntManager {
             level.playSound(null, dead.getX(), dead.getY(), dead.getZ(), SoundEvents.WOLF_GROWL, SoundSource.HOSTILE, 1.0F, 0.8F);
             level.sendParticles(new DustParticleOptions(new Vector3f(0.55F, 0.0F, 0.0F), 1.6F),
                     dead.getX(), dead.getY() + 0.6D, dead.getZ(), 30, 0.4D, 0.4D, 0.4D, 0.0D);
-        }
-    }
-
-    /** Blood Hunt hunters drop a Bloody Bone more often than ordinary DireWolves. */
-    @SubscribeEvent
-    public static void onDrops(LivingDropsEvent event) {
-        if (event.getEntity() instanceof WolfHorseEntity wolf && wolf.isBloodHunter()
-                && event.getSource().getEntity() instanceof ServerPlayer
-                && wolf.getRandom().nextFloat() < 0.15F + 0.05F * event.getLootingLevel()) {
-            event.getDrops().add(new ItemEntity(wolf.level(), wolf.getX(), wolf.getY(), wolf.getZ(),
-                    new ItemStack(WolfHorseMod.BLOODY_BONE.get())));
         }
     }
 

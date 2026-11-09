@@ -34,13 +34,12 @@ import java.util.UUID;
 public class BloodHunt {
     static final int WAVES = 3;
     private static final int[] WAVE_SIZE = {3, 4, 5};
-    private static final int HOWL_TICKS = 100;          // the 5-second howl before the first wave
     private static final int BETWEEN_WAVES = 200;       // 10 seconds between waves
     private static final int TIME_LIMIT = 12000;        // 10 minutes, then the pack gives up
     private static final int NOBODY_AROUND_LIMIT = 3600; // 3 minutes with no players nearby ends it
     private static final double BAR_RANGE = 112.0D;
 
-    enum State { HOWLING, WAVE, BETWEEN, WON, RETREAT, DONE }
+    enum State { ARRIVING, WAVE, BETWEEN, WON, RETREAT, DONE }
 
     final UUID id = UUID.randomUUID();
     final ServerLevel level;
@@ -51,8 +50,11 @@ public class BloodHunt {
     final UUID prey; // the player who blew the Blood Hunt Horn: the pack comes for them too
     private final ServerBossEvent bar;
     private final Set<UUID> hunters = new HashSet<>();
+    /** Players who struck one of the pack: the whole pack hunts them now. */
+    private final Set<UUID> enemies = new HashSet<>();
+    private int toSpawn = 0;
     private final long startTime;
-    private State state = State.HOWLING;
+    private State state = State.ARRIVING;
     private int wave = 0;
     private int waveSize = 1;
     private long stateTime;
@@ -70,7 +72,7 @@ public class BloodHunt {
         this.bar.setDarkenScreen(true);
         this.bar.setProgress(1.0F);
         this.setTitle(Component.translatable("bloodhunt.fotm.approaching", type.displayName()));
-        HowlSounds.bloodHuntHowl(level, Vec3.atCenterOf(center));
+        this.beginWave();
         for (ServerPlayer p : level.players()) {
             if (p.distanceToSqr(Vec3.atCenterOf(center)) < 160 * 160) {
                 p.displayClientMessage(Component.translatable("bloodhunt.fotm.howl").withStyle(ChatFormatting.DARK_RED), true);
@@ -86,6 +88,14 @@ public class BloodHunt {
         this.hunters.remove(hunter);
     }
 
+    void addEnemy(UUID player) {
+        this.enemies.add(player);
+    }
+
+    boolean isEnemy(UUID player) {
+        return this.enemies.contains(player);
+    }
+
     /** Called every second. */
     void tick() {
         long now = this.level.getGameTime();
@@ -97,7 +107,7 @@ public class BloodHunt {
             return;
         }
         boolean timeUp = now - this.startTime > TIME_LIMIT
-                || (this.fullMoon && this.state != State.HOWLING && this.level.isDay());
+                || (this.fullMoon && this.level.isDay());
         if (timeUp) {
             this.retreat();
             return;
@@ -111,11 +121,24 @@ public class BloodHunt {
             this.nobodyAround = 0;
         }
         switch (this.state) {
-            case HOWLING, BETWEEN -> {
-                int wait = this.state == State.HOWLING ? HOWL_TICKS : BETWEEN_WAVES;
-                this.bar.setProgress(Mth.clamp((now - this.stateTime) / (float) wait, 0.0F, 1.0F)); // fills up
-                if (now - this.stateTime >= wait) {
-                    this.startWave();
+            case ARRIVING -> {
+                // the wave's wolves arrive one at a time, each howling once
+                WolfHorseEntity hunter = this.spawnHunter(this.wave == WAVES && this.toSpawn == WAVE_SIZE[this.wave - 1]);
+                if (hunter != null) {
+                    this.hunters.add(hunter.getUUID());
+                    HowlSounds.howl(this.level, hunter.position(), HowlSounds.HUNT_VOLUME);
+                }
+                this.bar.setProgress(1.0F);
+                if (--this.toSpawn <= 0) {
+                    this.state = State.WAVE;
+                    this.stateTime = now;
+                    this.waveSize = Math.max(1, this.hunters.size());
+                }
+            }
+            case BETWEEN -> {
+                this.bar.setProgress(Mth.clamp((now - this.stateTime) / (float) BETWEEN_WAVES, 0.0F, 1.0F)); // fills up
+                if (now - this.stateTime >= BETWEEN_WAVES) {
+                    this.beginWave();
                 }
             }
             case WAVE -> {
@@ -135,22 +158,12 @@ public class BloodHunt {
         }
     }
 
-    private void startWave() {
+    /** The next wave starts arriving (one wolf per second). The Frenzied DireWolf leads the last wave. */
+    private void beginWave() {
         this.wave++;
-        this.state = State.WAVE;
+        this.state = State.ARRIVING;
         this.stateTime = this.level.getGameTime();
-        this.waveSize = WAVE_SIZE[this.wave - 1];
-        if (this.wave > 1) {
-            HowlSounds.singleHowl(this.level, Vec3.atCenterOf(this.center));
-        }
-        for (int i = 0; i < this.waveSize; i++) {
-            boolean frenzied = this.wave == WAVES && i == 0; // the Frenzied DireWolf leads the last wave
-            WolfHorseEntity hunter = this.spawnHunter(frenzied);
-            if (hunter != null) {
-                this.hunters.add(hunter.getUUID());
-            }
-        }
-        this.waveSize = Math.max(1, this.hunters.size());
+        this.toSpawn = WAVE_SIZE[this.wave - 1];
         this.setTitle(Component.translatable("bloodhunt.fotm.wave", this.type.displayName(), this.wave, WAVES));
     }
 

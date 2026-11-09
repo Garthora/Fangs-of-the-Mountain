@@ -56,7 +56,7 @@ public class HornItem extends Item {
                     stack.shrink(1);
                 }
             } else {
-                HowlSounds.singleHowl(server, player.position());
+                HowlSounds.howl(server, player.position(), HowlSounds.HORN_VOLUME);
                 player.getCooldowns().addCooldown(this, 80);
             }
             player.awardStat(Stats.ITEM_USED.get(this));

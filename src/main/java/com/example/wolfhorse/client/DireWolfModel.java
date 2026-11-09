@@ -26,6 +26,8 @@ public class DireWolfModel extends AgeableListModel<WolfHorseEntity> {
     private final ModelPart upperBody;
 
     private float tintR = 1.0F, tintG = 1.0F, tintB = 1.0F;
+    /** Turned off while drawing the glowing eyes, so they stay bright red. */
+    boolean useTint = true;
 
     public DireWolfModel(ModelPart root) {
         super(false, 5.0F, 2.0F);
@@ -103,7 +105,11 @@ public class DireWolfModel extends AgeableListModel<WolfHorseEntity> {
     @Override
     public void renderToBuffer(PoseStack pose, VertexConsumer buffer, int light, int overlay,
                                float r, float g, float b, float a) {
-        super.renderToBuffer(pose, buffer, light, overlay, r * this.tintR, g * this.tintG, b * this.tintB, a);
+        if (this.useTint) {
+            super.renderToBuffer(pose, buffer, light, overlay, r * this.tintR, g * this.tintG, b * this.tintB, a);
+        } else {
+            super.renderToBuffer(pose, buffer, light, overlay, r, g, b, a);
+        }
     }
 
     /** Fur colour per coat. The same "grey" coat is lighter on Tundra and darker on Plains. */
