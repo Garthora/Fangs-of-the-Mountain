@@ -48,6 +48,7 @@ jobs:
           SH
           chmod +x ../serve.sh
       - name: "1. Save a world with the old version (1.21.0)"
+        if: "!contains(github.event.head_commit.message, '[hunt-only]')"
         run: |
           cp old.jar server/mods/
           cat > old.cmds <<'C'
@@ -65,6 +66,7 @@ jobs:
           ./serve.sh old.log ../old.cmds
           grep -E 'Test passed|Test failed|has the following block data|Unknown|Error' server/old.log | cut -c1-400
       - name: "1b. Open it with 1.23.1 and add Forest things"
+        if: "!contains(github.event.head_commit.message, '[hunt-only]')"
         run: |
           rm server/mods/*.jar && cp mid.jar server/mods/
           cat > mid.cmds <<'C'
@@ -78,6 +80,7 @@ jobs:
           ./serve.sh mid.log ../mid.cmds
           grep -E 'Test passed|Test failed' server/mid.log
       - name: "2. Load that world with this build"
+        if: "!contains(github.event.head_commit.message, '[hunt-only]')"
         run: |
           rm server/mods/*.jar
           cp build/libs/$(grep '^jar_name=' gradle.properties | cut -d= -f2)-*.jar server/mods/
@@ -100,6 +103,7 @@ jobs:
           done
           exit $FAIL
       - name: "3. Dens"
+        if: "!contains(github.event.head_commit.message, '[hunt-only]')"
         run: |
           cat > den.cmds <<'C'
           forceload add -48 -48 48 48
@@ -165,6 +169,10 @@ jobs:
               echo "execute if entity @e[tag=fotm_blood_hunter]"
               echo "wait 50"
               echo "say RESULT $t"
+              echo "execute if entity @e[tag=fotm_blood_hunter]"
+              echo "execute as @e[tag=fotm_blood_hunter] run data get entity @s Pos"
+              echo "execute as @e[tag=fotm_blood_hunter] run data get entity @s Brain"
+              echo "execute as @e[type=minecraft:villager,limit=1] run data get entity @s Pos"
               echo "execute if entity $(box minecraft:villager $X)"
               echo "execute if entity $(box minecraft:cow $X)"
               echo "bloodhunt stop"
@@ -178,7 +186,7 @@ jobs:
           cat hunt.cmds | head -20
           ./serve.sh hunt.log ../hunt.cmds
           echo "======== blood hunt results ========"
-          grep -E 'Started a Blood Hunt|Stopped|Test passed|Test failed|RESULT|Unknown|Exception|exception' server/hunt.log | cut -c1-200
+          grep -E 'Started a Blood Hunt|Stopped|Test passed|Test failed|RESULT|Unknown|Exception|exception|entity data: \[' server/hunt.log | cut -c1-200
           FAIL=0
           [ "$(grep -c 'Started a Blood Hunt' server/hunt.log)" -ge 3 ] || { echo "FAIL: hunts did not start"; FAIL=1; }
           grep -iE 'exception' server/hunt.log | grep -iE 'fotm|wolfhorse|blood' && FAIL=1

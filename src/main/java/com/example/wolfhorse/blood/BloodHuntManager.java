@@ -229,12 +229,14 @@ public final class BloodHuntManager {
             src.sendFailure(Component.translatable("commands.fotm.bloodhunt.unknown", typeId));
             return 0;
         }
+        pos = src.getLevel().getHeightmapPos(net.minecraft.world.level.levelgen.Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, pos);
         if (!start(src.getLevel(), pos, type, false, null)) {
             src.sendFailure(Component.translatable("message.fotm.bloodhunt.already"));
             return 0;
         }
+        BlockPos at = pos;
         src.sendSuccess(() -> Component.translatable("commands.fotm.bloodhunt.started", type.displayName(),
-                pos.getX(), pos.getY(), pos.getZ()), true);
+                at.getX(), at.getY(), at.getZ()), true);
         return 1;
     }
 

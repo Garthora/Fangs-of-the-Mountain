@@ -37,7 +37,7 @@ public class BloodHunt {
     private static final int HOWL_TICKS = 100;          // the 5-second howl before the first wave
     private static final int BETWEEN_WAVES = 200;       // 10 seconds between waves
     private static final int TIME_LIMIT = 12000;        // 10 minutes, then the pack gives up
-    private static final int NOBODY_AROUND_LIMIT = 1200; // 1 minute with no players nearby ends it
+    private static final int NOBODY_AROUND_LIMIT = 3600; // 3 minutes with no players nearby ends it
     private static final double BAR_RANGE = 112.0D;
 
     enum State { HOWLING, WAVE, BETWEEN, WON, RETREAT, DONE }
@@ -144,8 +144,8 @@ public class BloodHunt {
             HowlSounds.singleHowl(this.level, Vec3.atCenterOf(this.center));
         }
         for (int i = 0; i < this.waveSize; i++) {
-            boolean alpha = this.wave == WAVES && i == 0;
-            WolfHorseEntity hunter = this.spawnHunter(alpha);
+            boolean frenzied = this.wave == WAVES && i == 0; // the Frenzied DireWolf leads the last wave
+            WolfHorseEntity hunter = this.spawnHunter(frenzied);
             if (hunter != null) {
                 this.hunters.add(hunter.getUUID());
             }
@@ -155,7 +155,7 @@ public class BloodHunt {
     }
 
     @Nullable
-    private WolfHorseEntity spawnHunter(boolean alpha) {
+    private WolfHorseEntity spawnHunter(boolean frenzied) {
         WolfHorseEntity wolf = this.type.entityType().create(this.level);
         if (wolf == null) {
             return null;
@@ -165,8 +165,8 @@ public class BloodHunt {
         wolf.finalizeSpawn(this.level, this.level.getCurrentDifficultyAt(spot), MobSpawnType.EVENT,
                 new AgeableMob.AgeableMobGroupData(false), null);
         wolf.makeBloodHunter(this.id, this.type, this.prey);
-        if (alpha) {
-            wolf.setCustomName(Component.translatable("entity.fotm.blood_alpha").withStyle(ChatFormatting.DARK_RED));
+        if (frenzied) {
+            wolf.setCustomName(Component.translatable("entity.fotm.frenzied_direwolf").withStyle(ChatFormatting.DARK_RED));
             wolf.getAttribute(Attributes.MAX_HEALTH).setBaseValue(50.0D);
             wolf.getAttribute(Attributes.ATTACK_DAMAGE).setBaseValue(9.0D);
             wolf.setHealth(wolf.getMaxHealth());

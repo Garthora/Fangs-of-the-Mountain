@@ -86,7 +86,6 @@
   "item.fotm.howling_horn": "Howling Horn",
   "item.fotm.blood_hunt_horn.desc": "Blow it to call a Blood Hunt down on yourself. Used up.",
   "item.fotm.howling_horn.desc": "A long wolf howl.",
-  "entity.fotm.blood_alpha": "Blood Alpha",
   "bloodhunt.fotm.type.tundra": "Tundra Pack",
   "bloodhunt.fotm.type.plains": "Plains Pack",
   "bloodhunt.fotm.type.dark_forest": "Dark Forest Pack",
@@ -99,5 +98,6 @@
   "message.fotm.bloodhunt.already": "A Blood Hunt is already happening nearby",
   "commands.fotm.bloodhunt.started": "Started a Blood Hunt (%s) at %s, %s, %s",
   "commands.fotm.bloodhunt.stopped": "Stopped %s Blood Hunt(s)",
-  "commands.fotm.bloodhunt.unknown": "Unknown Blood Hunt type: %s (use tundra, plains or dark_forest)"
+  "commands.fotm.bloodhunt.unknown": "Unknown Blood Hunt type: %s (use tundra, plains or dark_forest)",
+  "entity.fotm.frenzied_direwolf": "Frenzied DireWolf"
 }

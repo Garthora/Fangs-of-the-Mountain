@@ -334,7 +334,9 @@ public class WolfHorseEntity extends Horse {
         public void start() {
             BlockPos c = BloodHuntManager.center(this.wolf.getBloodHuntId());
             if (c != null) {
-                this.wolf.getNavigation().moveTo(c.getX() + 0.5D, c.getY(), c.getZ() + 0.5D, 1.3D);
+                BlockPos ground = this.wolf.level().getHeightmapPos(
+                        net.minecraft.world.level.levelgen.Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, c);
+                this.wolf.getNavigation().moveTo(ground.getX() + 0.5D, ground.getY(), ground.getZ() + 0.5D, 1.3D);
             }
         }
     }
