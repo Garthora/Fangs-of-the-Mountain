@@ -150,6 +150,8 @@ jobs:
           exit $FAIL
       - name: "4. Blood Hunts"
         run: |
+          rm -f server/mods/*.jar
+          cp build/libs/$(grep '^jar_name=' gradle.properties | cut -d= -f2)-*.jar server/mods/
           at() { echo "execute positioned $1 0 $2 positioned over motion_blocking_no_leaves run summon $3 ~ ~ ~ {PersistenceRequired:1b}"; }
           box() { echo "@e[type=$1,x=$(( $2 - 40 )),y=-64,z=-40,dx=80,dy=400,dz=80]"; }
           {
