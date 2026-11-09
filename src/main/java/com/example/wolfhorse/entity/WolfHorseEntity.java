@@ -50,7 +50,8 @@ import java.util.UUID;
 import com.example.wolfhorse.blood.BloodHuntManager;
 import com.example.wolfhorse.blood.BloodHuntType;
 import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.world.entity.decoration.ArmorStand;
+import net.minecraft.world.entity.TamableAnimal;
+import net.minecraft.world.entity.animal.IronGolem;
 import net.minecraft.world.entity.npc.AbstractVillager;
 
 import net.minecraft.network.chat.Component;
@@ -301,7 +302,11 @@ public class WolfHorseEntity extends Horse {
             return this.bloodHuntType == BloodHuntType.TUNDRA || player.getUUID().equals(this.bloodHuntPrey);
         }
         return switch (this.bloodHuntType) {
-            case TUNDRA -> !(e instanceof ArmorStand) && !(e instanceof Creeper);
+            // "everything in the village": villagers, iron golems, livestock, pets (and players, above)
+            case TUNDRA -> e instanceof AbstractVillager || e instanceof IronGolem
+                    || e.getType().is(BloodHuntManager.LIVESTOCK)
+                    || (e instanceof TamableAnimal pet && pet.isTame())
+                    || (e instanceof WolfHorseEntity dw && dw.isTamed());
             case PLAINS -> e.getType().is(BloodHuntManager.LIVESTOCK);
             case DARK_FOREST -> e instanceof AbstractVillager;
         };

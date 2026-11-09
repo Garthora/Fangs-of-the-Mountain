@@ -182,6 +182,10 @@ jobs:
               echo "execute if entity @e[tag=fotm_blood_hunter]"
               echo "wait 50"
               echo "say RESULT $t"
+              echo "say COUNT villagers:"
+              echo "execute if entity @e[type=minecraft:villager]"
+              echo "say COUNT cows:"
+              echo "execute if entity @e[type=minecraft:cow]"
               echo "execute if entity @e[tag=fotm_blood_hunter]"
               echo "execute as @e[tag=fotm_blood_hunter] run data get entity @s Pos"
               echo "execute as @e[type=minecraft:villager] run data get entity @s Health"
@@ -203,6 +207,29 @@ jobs:
           grep -E 'Started a Blood Hunt|Stopped|Test passed|Test failed|RESULT|CONTROL|Unknown|Exception|exception|entity data' server/hunt.log | cut -c1-200
           FAIL=0
           [ "$(grep -c 'Started a Blood Hunt' server/hunt.log)" -ge 3 ] || { echo "FAIL: hunts did not start"; FAIL=1; }
+          # after each hunt: how many villagers / cows were left (3 each to start)
+          python3 - <<'PY' || FAIL=1
+          import re
+          log=open('server/hunt.log').read().splitlines()
+          res={}; cur=None; want=None
+          for line in log:
+              m=re.search(r'RESULT (\w+)',line)
+              if m: cur=m.group(1); res[cur]={}; continue
+              m=re.search(r'COUNT (\w+):',line)
+              if m and cur: want=m.group(1); continue
+              if want and cur and ('Test passed' in line or 'Test failed' in line):
+                  n=int(line.rsplit(' ',1)[1]) if 'Test passed' in line else 0
+                  res[cur][want]=n; want=None
+          print(res)
+          ok=True
+          def check(c,msg):
+              global ok
+              print(('PASS ' if c else 'FAIL ')+msg); ok&=c
+          r=res.get('tundra',{}); check(r.get('villagers',3)<3 and r.get('cows',3)<3, 'Tundra pack attacked villagers and livestock')
+          r=res.get('plains',{}); check(r.get('cows',3)<3 and r.get('villagers',0)==3, 'Plains pack took livestock, left villagers')
+          r=res.get('dark_forest',{}); check(r.get('villagers',3)<3 and r.get('cows',0)==3, 'Dark Forest pack ate villagers, left livestock')
+          raise SystemExit(0 if ok else 1)
+          PY
           grep -iE 'exception' server/hunt.log | grep -iE 'fotm|wolfhorse|blood' && FAIL=1
           exit $FAIL
       - name: Upload server logs
