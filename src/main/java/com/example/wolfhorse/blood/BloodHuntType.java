@@ -1,5 +1,6 @@
 package com.example.wolfhorse.blood;
 
+import com.example.wolfhorse.WolfHorseConfig;
 import com.example.wolfhorse.WolfHorseMod;
 import com.example.wolfhorse.entity.WolfHorseEntity;
 import net.minecraft.core.BlockPos;
@@ -15,20 +16,20 @@ import java.util.Locale;
 
 /**
  * The three kinds of Blood Hunt, one per DireWolf type.
- *  TUNDRA      - attacks everything in the village (villagers, golems, animals, players)
- *  PLAINS      - goes after livestock
- *  DARK_FOREST - eats the villagers
+ *  RAVENOUS - Hunt of the Ravenous (Tundra DireWolves): attacks everything in the village
+ *  HUNGRY   - Hunt of the Hungry (Plains DireWolves): goes after livestock
+ *  HATEFUL  - Hunt of the Hateful (Dark Forest DireWolves): eats the villagers
  */
 public enum BloodHuntType {
-    TUNDRA, PLAINS, DARK_FOREST;
+    RAVENOUS, HUNGRY, HATEFUL;
 
     public final String id = this.name().toLowerCase(Locale.ROOT);
 
     public EntityType<WolfHorseEntity> entityType() {
         return switch (this) {
-            case TUNDRA -> WolfHorseMod.TUNDRA_DIREWOLF.get();
-            case PLAINS -> WolfHorseMod.PLAINS_DIREWOLF.get();
-            case DARK_FOREST -> WolfHorseMod.DARK_FOREST_DIREWOLF.get();
+            case RAVENOUS -> WolfHorseMod.TUNDRA_DIREWOLF.get();
+            case HUNGRY -> WolfHorseMod.PLAINS_DIREWOLF.get();
+            case HATEFUL -> WolfHorseMod.DARK_FOREST_DIREWOLF.get();
         };
     }
 
@@ -44,12 +45,16 @@ public enum BloodHuntType {
     public static BloodHuntType forBiome(ServerLevel level, BlockPos pos) {
         Holder<Biome> biome = level.getBiome(pos);
         if (biome.value().coldEnoughToSnow(pos)) {
-            return TUNDRA;
+            return RAVENOUS;
         }
         if (biome.is(BiomeTags.IS_FOREST) || biome.is(BiomeTags.IS_TAIGA) || biome.is(BiomeTags.IS_JUNGLE)) {
-            return DARK_FOREST;
+            return HATEFUL;
         }
-        return PLAINS;
+        return HUNGRY;
+    }
+
+    public boolean enabled() {
+        return WolfHorseConfig.huntEnabled(this);
     }
 
     public static BloodHuntType byId(String id) {

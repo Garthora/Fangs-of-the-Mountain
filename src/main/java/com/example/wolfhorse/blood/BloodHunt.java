@@ -212,7 +212,7 @@ public class BloodHunt {
         this.state = State.WON;
         this.stateTime = this.level.getGameTime();
         this.bar.setProgress(0.0F);
-        this.setTitle(Component.translatable("bloodhunt.fotm.victory"));
+        this.setTitle(Component.translatable("bloodhunt.fotm.victory", this.type.displayName()));
         for (ServerPlayer p : this.bar.getPlayers()) {
             p.playNotifySound(SoundEvents.UI_TOAST_CHALLENGE_COMPLETE, SoundSource.PLAYERS, 1.0F, 1.0F);
         }
@@ -237,7 +237,7 @@ public class BloodHunt {
         }
         this.state = State.RETREAT;
         this.stateTime = this.level.getGameTime();
-        this.setTitle(Component.translatable("bloodhunt.fotm.retreat"));
+        this.setTitle(Component.translatable("bloodhunt.fotm.retreat", this.type.displayName()));
         for (UUID u : new HashSet<>(this.hunters)) {
             Entity e = this.level.getEntity(u);
             if (e != null) {

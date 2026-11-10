@@ -312,20 +312,20 @@ public class WolfHorseEntity extends Horse {
             if (player.isCreative() || player.isSpectator()) {
                 return false;
             }
-            // Tundra and Dark Forest packs treat players like any villager; Plains packs only
+            // the Ravenous and the Hateful treat players like any villager; the Hungry only
             // go for players who struck the pack (or blew the Blood Hunt Horn)
-            return this.bloodHuntType != BloodHuntType.PLAINS
+            return this.bloodHuntType != BloodHuntType.HUNGRY
                     || player.getUUID().equals(this.bloodHuntPrey)
                     || BloodHuntManager.isEnemy(this.bloodHuntId, player.getUUID());
         }
         return switch (this.bloodHuntType) {
             // "everything in the village": villagers, iron golems, livestock, pets (and players, above)
-            case TUNDRA -> e instanceof AbstractVillager || e instanceof IronGolem
+            case RAVENOUS -> e instanceof AbstractVillager || e instanceof IronGolem
                     || e.getType().is(BloodHuntManager.LIVESTOCK)
                     || (e instanceof TamableAnimal pet && pet.isTame())
                     || (e instanceof WolfHorseEntity dw && dw.isTamed());
-            case PLAINS -> e.getType().is(BloodHuntManager.LIVESTOCK);
-            case DARK_FOREST -> e instanceof AbstractVillager;
+            case HUNGRY -> e.getType().is(BloodHuntManager.LIVESTOCK);
+            case HATEFUL -> e instanceof AbstractVillager;
         };
     }
 

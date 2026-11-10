@@ -48,6 +48,10 @@ public class HornItem extends Item {
         if (level instanceof ServerLevel server) {
             if (this.bloodHunt) {
                 BloodHuntType type = BloodHuntType.forBiome(server, player.blockPosition());
+                if (!type.enabled()) {
+                    player.displayClientMessage(Component.translatable("message.fotm.bloodhunt.disabled", type.displayName()), true);
+                    return InteractionResultHolder.fail(stack);
+                }
                 if (!BloodHuntManager.start(server, player.blockPosition(), type, false, player.getUUID())) {
                     player.displayClientMessage(Component.translatable("message.fotm.bloodhunt.already"), true);
                     return InteractionResultHolder.fail(stack);

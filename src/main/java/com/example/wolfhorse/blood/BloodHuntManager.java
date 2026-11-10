@@ -101,7 +101,7 @@ public final class BloodHuntManager {
     /** Starts a Blood Hunt here. Returns false if one is already going on nearby. */
     public static boolean start(ServerLevel level, BlockPos center, BloodHuntType type, boolean fullMoon,
                                 @Nullable UUID prey) {
-        if (huntNear(level, center)) {
+        if (!type.enabled() || huntNear(level, center)) {
             return false;
         }
         BloodHunt hunt = new BloodHunt(level, center, type, fullMoon, prey);
@@ -159,7 +159,7 @@ public final class BloodHuntManager {
                 continue;
             }
             findPrey(level, player).ifPresent(site ->
-                    start(level, site, BloodHuntType.forBiome(level, site), true, null));
+                    start(level, site, BloodHuntType.forBiome(level, site), true, null)); // skipped if that hunt is off
         }
     }
 
@@ -177,9 +177,9 @@ public final class BloodHuntManager {
                 hunt.hunterDied(wolf.getUUID());
             }
         }
-        // Dark Forest packs eat the villagers they kill
+        // the Hateful eat the villagers they kill
         if (dead instanceof AbstractVillager && event.getSource().getEntity() instanceof WolfHorseEntity hunter
-                && hunter.isBloodHunter() && hunter.getBloodHuntType() == BloodHuntType.DARK_FOREST
+                && hunter.isBloodHunter() && hunter.getBloodHuntType() == BloodHuntType.HATEFUL
                 && dead.level() instanceof ServerLevel level) {
             hunter.heal(10.0F);
             level.playSound(null, dead.getX(), dead.getY(), dead.getZ(), SoundEvents.GENERIC_EAT, SoundSource.HOSTILE, 1.0F, 0.7F);
@@ -232,6 +232,10 @@ public final class BloodHuntManager {
             return 0;
         }
         pos = src.getLevel().getHeightmapPos(net.minecraft.world.level.levelgen.Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, pos);
+        if (!type.enabled()) {
+            src.sendFailure(Component.translatable("message.fotm.bloodhunt.disabled", type.displayName()));
+            return 0;
+        }
         if (!start(src.getLevel(), pos, type, false, null)) {
             src.sendFailure(Component.translatable("message.fotm.bloodhunt.already"));
             return 0;

@@ -21,6 +21,7 @@ public final class WolfHorseConfig {
     private static final ForgeConfigSpec.EnumValue<FurArmorMode> FUR_ARMOR_MODE;
     private static final ForgeConfigSpec.BooleanValue FULL_MOON_HUNTS;
     private static final ForgeConfigSpec.DoubleValue FULL_MOON_CHANCE;
+    private static final ForgeConfigSpec.BooleanValue RAVENOUS, HUNGRY, HATEFUL;
 
     static {
         ForgeConfigSpec.Builder b = new ForgeConfigSpec.Builder();
@@ -52,6 +53,16 @@ public final class WolfHorseConfig {
                 .comment("On each full-moon night, the chance (0.0 to 1.0) that a Blood Hunt comes for a player",
                         "who is near a village or farm animals. 1.0 = every full moon.")
                 .defineInRange("fullMoonChance", 1.0D, 0.0D, 1.0D);
+        RAVENOUS = b
+                .comment("Hunt of the Ravenous: Tundra DireWolves attack everything in the village (snowy biomes).",
+                        "false = it never happens: not on full moons, not from the Blood Hunt Horn, not by command.")
+                .define("huntOfTheRavenous", true);
+        HUNGRY = b
+                .comment("Hunt of the Hungry: Plains DireWolves go after livestock (most other biomes).")
+                .define("huntOfTheHungry", true);
+        HATEFUL = b
+                .comment("Hunt of the Hateful: Dark Forest DireWolves eat the villagers (forest, taiga and jungle biomes).")
+                .define("huntOfTheHateful", true);
         b.pop();
 
         SPEC = b.build();
@@ -66,6 +77,18 @@ public final class WolfHorseConfig {
 
     public static boolean fullMoonBloodHunts() {
         return SPEC.isLoaded() ? FULL_MOON_HUNTS.get() : true;
+    }
+
+    /** Is this kind of Blood Hunt switched on in the config? */
+    public static boolean huntEnabled(com.example.wolfhorse.blood.BloodHuntType type) {
+        if (!SPEC.isLoaded()) {
+            return true;
+        }
+        return switch (type) {
+            case RAVENOUS -> RAVENOUS.get();
+            case HUNGRY -> HUNGRY.get();
+            case HATEFUL -> HATEFUL.get();
+        };
     }
 
     public static double fullMoonBloodHuntChance() {
