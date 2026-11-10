@@ -22,6 +22,7 @@ public final class WolfHorseConfig {
     private static final ForgeConfigSpec.BooleanValue FULL_MOON_HUNTS;
     private static final ForgeConfigSpec.DoubleValue FULL_MOON_CHANCE;
     private static final ForgeConfigSpec.BooleanValue RAVENOUS, HUNGRY, HATEFUL;
+    private static final ForgeConfigSpec.BooleanValue COMMAND;
 
     static {
         ForgeConfigSpec.Builder b = new ForgeConfigSpec.Builder();
@@ -63,6 +64,10 @@ public final class WolfHorseConfig {
         HATEFUL = b
                 .comment("Hunt of the Hateful: Dark Forest DireWolves eat the villagers (forest, taiga and jungle biomes).")
                 .define("huntOfTheHateful", true);
+        COMMAND = b
+                .comment("Can operators use the /bloodhunt command (start and stop)?",
+                        "false = the command is turned off. Players may need to rejoin before it disappears from their command list.")
+                .define("bloodHuntCommand", true);
         b.pop();
 
         SPEC = b.build();
@@ -77,6 +82,10 @@ public final class WolfHorseConfig {
 
     public static boolean fullMoonBloodHunts() {
         return SPEC.isLoaded() ? FULL_MOON_HUNTS.get() : true;
+    }
+
+    public static boolean bloodHuntCommand() {
+        return SPEC.isLoaded() ? COMMAND.get() : true;
     }
 
     /** Is this kind of Blood Hunt switched on in the config? */

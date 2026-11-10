@@ -201,7 +201,7 @@ public final class BloodHuntManager {
     @SubscribeEvent
     public static void onRegisterCommands(RegisterCommandsEvent event) {
         event.getDispatcher().register(Commands.literal("bloodhunt")
-                .requires(src -> src.hasPermission(2))
+                .requires(src -> src.hasPermission(2) && WolfHorseConfig.bloodHuntCommand())
                 .then(Commands.literal("start")
                         .then(Commands.argument("type", StringArgumentType.word())
                                 .suggests((ctx, b) -> SharedSuggestionProvider.suggest(
