@@ -149,6 +149,9 @@ public class WolfHorseEntity extends Horse {
         // Blood Hunt packs: Tundra attack everything, Plains go for livestock, Dark Forest for villagers
         this.targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(this, LivingEntity.class, 5, false, false,
                 this::isHuntPrey));
+        // Hunt of the Ravenous: once no villagers (or players) are in reach, everything else in the village
+        this.targetSelector.addGoal(4, new NearestAttackableTargetGoal<>(this, LivingEntity.class, 5, false, false,
+                this::isRavenousOtherPrey));
         this.targetSelector.addGoal(5, new NearestAttackableTargetGoal<>(this, Sheep.class, 10, true, false,
                 e -> !this.isTamed()));
         this.targetSelector.addGoal(5, new NearestAttackableTargetGoal<>(this, Rabbit.class, 10, true, false,
@@ -320,13 +323,25 @@ public class WolfHorseEntity extends Horse {
         }
         return switch (this.bloodHuntType) {
             // "everything in the village": villagers, iron golems, livestock, pets (and players, above)
-            case RAVENOUS -> e instanceof AbstractVillager || e instanceof IronGolem
-                    || e.getType().is(BloodHuntManager.LIVESTOCK)
-                    || (e instanceof TamableAnimal pet && pet.isTame())
-                    || (e instanceof WolfHorseEntity dw && dw.isTamed());
+            case RAVENOUS -> e instanceof AbstractVillager; // first choice; the rest comes after (below)
             case HUNGRY -> e.getType().is(BloodHuntManager.LIVESTOCK);
             case HATEFUL -> e instanceof AbstractVillager;
         };
+    }
+
+    /** Hunt of the Ravenous, second choice: iron golems, livestock and pets. */
+    private boolean isRavenousOtherPrey(LivingEntity e) {
+        if (this.bloodHuntType != BloodHuntType.RAVENOUS || this.bloodHuntId == null || !e.isAlive()
+                || e instanceof Player || e instanceof AbstractVillager) {
+            return false;
+        }
+        if (!BloodHuntManager.nearCenter(this.bloodHuntId, e.position(), 64.0D)) {
+            return false;
+        }
+        return e instanceof IronGolem
+                || e.getType().is(BloodHuntManager.LIVESTOCK)
+                || (e instanceof TamableAnimal pet && pet.isTame())
+                || (e instanceof WolfHorseEntity dw && dw.isTamed());
     }
 
     /** Hunters with nothing to attack make their way to the middle of the hunt. */
