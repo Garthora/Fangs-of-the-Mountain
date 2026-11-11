@@ -5,42 +5,42 @@
       {
         "name": "minecraft:mob/wolf/howl1",
         "pitch": 0.85,
-        "volume": 1.0
-      },
-      {
-        "name": "minecraft:mob/wolf/howl2",
-        "pitch": 0.72,
-        "volume": 1.0
-      },
-      {
-        "name": "minecraft:mob/wolf/howl1",
-        "pitch": 1.0,
-        "volume": 0.9
-      },
-      {
-        "name": "minecraft:mob/wolf/howl2",
-        "pitch": 0.62,
-        "volume": 0.95
-      },
-      {
-        "name": "minecraft:mob/wolf/howl1",
-        "pitch": 0.92,
-        "volume": 0.85
-      },
-      {
-        "name": "minecraft:mob/wolf/howl2",
-        "pitch": 0.78,
-        "volume": 1.0
-      },
-      {
-        "name": "minecraft:mob/wolf/howl1",
-        "pitch": 1.08,
         "volume": 0.8
       },
       {
         "name": "minecraft:mob/wolf/howl2",
+        "pitch": 0.72,
+        "volume": 0.8
+      },
+      {
+        "name": "minecraft:mob/wolf/howl1",
+        "pitch": 1.0,
+        "volume": 0.72
+      },
+      {
+        "name": "minecraft:mob/wolf/howl2",
+        "pitch": 0.62,
+        "volume": 0.76
+      },
+      {
+        "name": "minecraft:mob/wolf/howl1",
+        "pitch": 0.92,
+        "volume": 0.68
+      },
+      {
+        "name": "minecraft:mob/wolf/howl2",
+        "pitch": 0.78,
+        "volume": 0.8
+      },
+      {
+        "name": "minecraft:mob/wolf/howl1",
+        "pitch": 1.08,
+        "volume": 0.64
+      },
+      {
+        "name": "minecraft:mob/wolf/howl2",
         "pitch": 0.68,
-        "volume": 0.9
+        "volume": 0.72
       }
     ]
   }
