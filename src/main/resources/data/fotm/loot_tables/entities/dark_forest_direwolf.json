@@ -94,6 +94,25 @@
           "looting_multiplier": 0.005
         }
       ]
+    },
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "fotm:bloody_bone"
+        }
+      ],
+      "conditions": [
+        {
+          "condition": "minecraft:killed_by_player"
+        },
+        {
+          "condition": "minecraft:random_chance_with_looting",
+          "chance": 0.02,
+          "looting_multiplier": 0.005
+        }
+      ]
     }
   ]
 }
