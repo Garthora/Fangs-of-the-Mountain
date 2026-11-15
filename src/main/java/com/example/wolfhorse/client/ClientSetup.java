@@ -27,13 +27,16 @@ public class ClientSetup {
     public static void registerLayers(EntityRenderersEvent.RegisterLayerDefinitions event) {
         event.registerLayerDefinition(DireWolfSaddleLayer.LAYER, DireWolfSaddleLayer::createLayer);
         event.registerLayerDefinition(ScarfLayer.LAYER, ScarfLayer::createLayer);
+        event.registerLayerDefinition(TundraDireWolfModel.LAYER, TundraDireWolfModel::createBodyLayer);
+        event.registerLayerDefinition(TundraDireWolfRenderer.Saddle.LAYER, TundraDireWolfRenderer.Saddle::createLayer);
     }
 
     @SubscribeEvent
     public static void registerRenderers(EntityRenderersEvent.RegisterRenderers event) {
-        for (var type : WolfHorseMod.allDirewolves()) {
-            event.registerEntityRenderer(type.get(), DireWolfRenderer::new);
-        }
+        // Tundra DireWolves use the custom Blockbench model; the others use the big-wolf model
+        event.registerEntityRenderer(WolfHorseMod.TUNDRA_DIREWOLF.get(), TundraDireWolfRenderer::new);
+        event.registerEntityRenderer(WolfHorseMod.PLAINS_DIREWOLF.get(), DireWolfRenderer::new);
+        event.registerEntityRenderer(WolfHorseMod.DARK_FOREST_DIREWOLF.get(), DireWolfRenderer::new);
     }
 
     /** Show the Pelt and Scarf on players (both skin types) and armor stands. */
